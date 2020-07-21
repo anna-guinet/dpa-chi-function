@@ -25,8 +25,8 @@ First, the following scripts save success probabilities per rank in a CSV file:
 - ```num_sim_3bits_pr_success_to_csv.py [-h] K kappa num_sim```  for the three-bit strategy.
 
 Then, run the following scripts to plot the results from the CSV file:
-- ```num_sim_1bit_pr_success_csv_to_plot.py [-h] mode i K kappa num_sim```  for the one-bit strategy with absolute (mode:1) or squared (mode:2) scalar products, or both (mode:3).
-- ```num_sim_1x3bits_pr_success_csv_to_plot.py [-h] mode K kappa num_sim```  for the strategy combining three absolute (mode:1) or squared (mode:2) scalar products, or both (mode:3).
+- ```num_sim_1bit_pr_success_csv_to_plot.py [-h] mode i K kappa num_sim```  for the one-bit strategy with absolute (mode: 1) or squared (mode: 2) scalar products, or both (mode: 3).
+- ```num_sim_1x3bits_pr_success_csv_to_plot.py [-h] mode K kappa num_sim```  for the strategy combining three absolute (mode: 1) or squared (mode: 2) scalar products, or both (mode: 3).
 - ``` num_sim_3bits_pr_success_csv_to_plot.py [-h] K kappa num_sim ``` for the three-bit strategy.
 
 ## Plot average rank for multiple simulations
@@ -34,13 +34,13 @@ Then, run the following scripts to plot the results from the CSV file:
 In order to plot average rank for a given number of simulations, compile one of the script ```num_sim_*_avgrank_*``` with Python.
 
 First, the following scripts save average rank per weight w in a CSV file:
-- ```num_sim_1bit_avgrank_csv_to_csv.py [-h] mode i K kappa num_sim```  for the one-bit strategy with absolute (mode:1) or squared (mode:2) scalar products.
-- ```num_sim_1x3bits_avgrank_csv_to_csv.py [-h] mode K kappa num_sim```  for the strategy combining three absolute (mode:1) or squared (mode:2) scalar products.
+- ```num_sim_1bit_avgrank_csv_to_csv.py [-h] mode i K kappa num_sim```  for the one-bit strategy with absolute (mode: 1) or squared (mode: 2) scalar products.
+- ```num_sim_1x3bits_avgrank_csv_to_csv.py [-h] mode K kappa num_sim```  for the strategy combining three absolute (mode: 1) or squared (mode: 2) scalar products.
 - ```num_sim_3bits_avgrank_csv_to_csv.py [-h] K kappa num_sim```  for the three-bit strategy.
 
 Then, run the following scripts to plot the results from the CSV file:
-- ```num_sim_1bit_avgrank_csv_to_plot.py [-h] mode i K kappa num_sim```  for the one-bit strategy with absolute (mode:1) or squared (mode:2) scalar products, or both (mode:3).
-- ```num_sim_1x3bits_avgrank_csv_to_plot.py [-h] mode K kappa num_sim```  for the strategy combining three absolute (mode:1) or squared (mode:2) scalar products, or both (mode:3).
+- ```num_sim_1bit_avgrank_csv_to_plot.py [-h] mode i K kappa num_sim```  for the one-bit strategy with absolute (mode: 1) or squared (mode: 2) scalar products, or both (mode: 3).
+- ```num_sim_1x3bits_avgrank_csv_to_plot.py [-h] mode K kappa num_sim```  for the strategy combining three absolute (mode: 1) or squared (mode: 2) scalar products, or both (mode: 3).
 - ```num_sim_3bits_avgrank_csv_to_plot.py [-h] K kappa num_sim``` for the three-bit strategy.
 
 # Licence
