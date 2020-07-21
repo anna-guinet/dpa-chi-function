@@ -412,7 +412,7 @@ def sim_1x3bits(K, kappa, num_sim):
 	# Signal message mu
 	mu = list(itertools.product([bool(0), bool(1)], repeat=n))
 
-	getcontext().prec = 10=
+	getcontext().prec = 10
 
 	# All possible signal power consumption values
 	S_ref = gen_S_ref(mu, n)

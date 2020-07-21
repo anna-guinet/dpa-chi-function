@@ -210,7 +210,7 @@ def main(unused_command_line_args):
 	parser = argparse.ArgumentParser(description='mode, i, K, kappa and num_sim')
 
 	parser.add_argument('mode', metavar='mode', type=int, default=1, 
-						help='mode 1: Probability of success with absolute scalar product \nmode 2: Probability of success with squared scalar product\n mode 3: Probability of success with absolute and squared scalar product')
+						help='mode 1: Probability of success with absolute scalar product\n mode 2: Probability of success with squared scalar product\n mode 3: Probability of success with absolute and squared scalar product')
 	parser.add_argument('i', metavar='i', type=int, default=1, help='studied bit of first chi row in [0, 2]')
 	parser.add_argument('K', metavar='K', type=str, default='000', help='3-length bit value')
 	parser.add_argument('kappa', metavar='kappa', type=str, default='000', help='3-length bit value')
