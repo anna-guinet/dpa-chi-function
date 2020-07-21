@@ -20,10 +20,10 @@ import sys
 def noise(n=3):
 	"""
 	Compute a noise power consumption R vector for each possible message mu. 
-	
+
 	Parameter:
 	n -- integer (defaut 3)
-	
+
 	Return:
 	R -- list of integers, length 2^n
 	"""
@@ -204,9 +204,9 @@ def gen_S_ref(mu, n=3):
 	
 	return S_ref
 
-def fct_sq_correct(w, a0, a1, a2):
+def fct_sq_solution(w, a0, a1, a2):
 	"""
-	Function for the scalar product of the correct guess.
+	Function for the scalar product of the solution guess.
 	
 	Parameter:
 	w -- float
@@ -240,7 +240,7 @@ def fct_sq_correct(w, a0, a1, a2):
 
 def fct_sq_common(w, a, b, c):
 	"""
-	Function for the scalar product of a guess which has two kappa bits in common with the correct one (a).
+	Function for the scalar product of a guess which has two kappa bits in common with the solution one (a).
 	
 	Parameter:
 	w -- float
@@ -262,9 +262,9 @@ def fct_sq_common(w, a, b, c):
 
 	return y / Decimal(192)
 
-def fct_sq_incorrect(w, b, c, d):
+def fct_sq_nonsolution(w, b, c, d):
 	"""
-	Function for the scalar product of an incorrect guess.
+	Function for the scalar product of an nonsolution guess.
 	
 	Parameter:
 	x -- float
@@ -287,7 +287,7 @@ def fct_sq_incorrect(w, b, c, d):
 
 def find_sq_min(a0, a1, a2):
 	"""
-	Find the minimum point for the scalar product of the correct guess.
+	Find the minimum point for the scalar product of the solution guess.
 	
 	Parameters:
 	a0 -- Decimal
@@ -318,9 +318,9 @@ def find_sq_min(a0, a1, a2):
 
 	return w_min
 
-def find_inter_incorrect(a0, a1, a2, b, c, d):
+def find_wr_nonsolution(a0, a1, a2, b, c, d):
 	"""
-	Find the point when for the scalar product of the correct guess equals the scalar product of an incorrect guess.
+	Find the point when for the scalar product of the solution guess equals the scalar product of an nonsolution guess.
 	
 	F(w) = (alpha - delta) w^2 + (beta +  2 delta) w + (gamma - delta) = 0 for which w? 
 	
@@ -377,9 +377,9 @@ def find_inter_incorrect(a0, a1, a2, b, c, d):
 
 	return w1, w2
 	
-def find_inter_common(a, a1, a2, b, c):
+def find_wr_common(a, a1, a2, b, c):
 	"""
-	Find the point when for the scalar product of the correct guess equals the scalar product of an common guess on a.
+	Find the point when for the scalar product of the solution guess equals the scalar product of an common guess on a.
 	
 	F(w) = (alpha - zeta) w^2 + (beta - epsilon) w + (gamma - delta) = 0 for which w? 
 	
@@ -440,12 +440,12 @@ def find_inter_common(a, a1, a2, b, c):
 
 	return w1, w2
 
-def find_rank(inter):
+def find_rank(wr):
 	"""
-	Return the list of ranks for the correct kappa.
+	Return the list of ranks for the solution kappa.
 	
 	Parameter:
-	inter -- list of Decimal
+	wr -- list of Decimal
 	
 	Return:
 	rank -- list of integer
@@ -454,18 +454,18 @@ def find_rank(inter):
 	rank = []
 
 	# If the list is not empty, retrieve the rank in [0,1]
-	if inter:
+	if wr:
 
 		# Count number of rank increment (_1) and rank decrement (_2)
-		counter_1 = sum(1 for tuple in inter if tuple[1].endswith('_1'))
-		counter_2 = sum(-1 for tuple in inter if tuple[1].endswith('_2'))
-		num_inter = counter_1 + counter_2
+		counter_1 = sum(1 for tuple in wr if tuple[1].endswith('_1'))
+		counter_2 = sum(-1 for tuple in wr if tuple[1].endswith('_2'))
+		num_wr = counter_1 + counter_2
 		
-		rank_init = 1 + num_inter
+		rank_init = 1 + num_wr
 		
 		rank.append(rank_init)
 		
-		for tuple in inter:
+		for tuple in wr:
 		
 			# If solution 1, rank increases
 			if tuple[1].endswith('_1'):
@@ -477,7 +477,7 @@ def find_rank(inter):
 	else:
 		rank = [1]
 		
-	return rank, inter
+	return rank, wr
 
 def xor_secret_i(K, kappa, i):
 	""" 
@@ -591,35 +591,35 @@ def sim_1x3bits(n, K, kappa, num_sim):
 					  ['110', 2, 2, 3],
 					  ['111', 3, 3, 3]]
 
-	correct_idx = [sublist for sublist in list_kappa_idx if sublist[0] == kappa]
-	correct_idx = list(itertools.chain.from_iterable(correct_idx)) # Un-nest the previous list
+	solution_idx = [sublist for sublist in list_kappa_idx if sublist[0] == kappa]
+	solution_idx = list(itertools.chain.from_iterable(solution_idx)) # Un-nest the previous list
 	
-	common0_idx = [sublist for sublist in list_kappa_idx if (sublist[1] == correct_idx[1]) and (sublist[0] != kappa)]
+	common0_idx = [sublist for sublist in list_kappa_idx if (sublist[1] == solution_idx[1]) and (sublist[0] != kappa)]
 	common0_idx = list(itertools.chain.from_iterable(common0_idx)) # Un-nest the previous list
 
-	common1_idx = [sublist for sublist in list_kappa_idx if (sublist[2] == correct_idx[2]) and (sublist[0] != kappa)]
+	common1_idx = [sublist for sublist in list_kappa_idx if (sublist[2] == solution_idx[2]) and (sublist[0] != kappa)]
 	common1_idx = list(itertools.chain.from_iterable(common1_idx)) # Un-nest the previous list
 	
-	common2_idx = [sublist for sublist in list_kappa_idx if (sublist[3] == correct_idx[3]) and (sublist[0] != kappa)]
+	common2_idx = [sublist for sublist in list_kappa_idx if (sublist[3] == solution_idx[3]) and (sublist[0] != kappa)]
 	common2_idx = list(itertools.chain.from_iterable(common2_idx)) # Un-nest the previous list
 
-	incorrect_idx = [sublist for sublist in list_kappa_idx if (sublist[1] != correct_idx[1]) and (sublist[2] != correct_idx[2]) and (sublist[3] != correct_idx[3])]
-	incorrect0_idx = incorrect_idx[0]
-	incorrect1_idx = incorrect_idx[1]
-	incorrect2_idx = incorrect_idx[2]
-	incorrect3_idx = incorrect_idx[3]
+	nonsolution_idx = [sublist for sublist in list_kappa_idx if (sublist[1] != solution_idx[1]) and (sublist[2] != solution_idx[2]) and (sublist[3] != solution_idx[3])]
+	nonsolution0_idx = nonsolution_idx[0]
+	nonsolution1_idx = nonsolution_idx[1]
+	nonsolution2_idx = nonsolution_idx[2]
+	nonsolution3_idx = nonsolution_idx[3]
 	
 	""" To find initial scalar product values """
-	correct_init = [init_scalar[i][correct_idx[i+1]] for i in range(3)]
+	solution_init = [init_scalar[i][solution_idx[i+1]] for i in range(3)]
 	
 	common0_init = [init_scalar[i][common0_idx[i+1]] for i in range(3)]
 	common1_init = [init_scalar[i][common1_idx[i+1]] for i in range(3)]
 	common2_init = [init_scalar[i][common2_idx[i+1]] for i in range(3)]
 	
-	incorrect0_init = [init_scalar[i][incorrect0_idx[i+1]] for i in range(3)]
-	incorrect1_init = [init_scalar[i][incorrect1_idx[i+1]] for i in range(3)]
-	incorrect2_init = [init_scalar[i][incorrect2_idx[i+1]] for i in range(3)]
-	incorrect3_init = [init_scalar[i][incorrect3_idx[i+1]] for i in range(3)]
+	nonsolution0_init = [init_scalar[i][nonsolution0_idx[i+1]] for i in range(3)]
+	nonsolution1_init = [init_scalar[i][nonsolution1_idx[i+1]] for i in range(3)]
+	nonsolution2_init = [init_scalar[i][nonsolution2_idx[i+1]] for i in range(3)]
+	nonsolution3_init = [init_scalar[i][nonsolution3_idx[i+1]] for i in range(3)]
 
 	
 	""" Find the functions according to the kappas """
@@ -634,35 +634,35 @@ def sim_1x3bits(n, K, kappa, num_sim):
 	precision = 1000
 	w_list = [(w / precision) for w in range(precision)]
 	
-	# Determine the sign of initial correct value depending on the activity of the register at bit i
+	# Determine the sign of initial solution value depending on the activity of the register at bit i
 	p_0 = xor_secret_i(K, kappa, 0)
 	p_1 = xor_secret_i(K, kappa, 1)
 	p_2 = xor_secret_i(K, kappa, 2)
-	correct_init[0] = correct_init[0] * p_0
-	correct_init[1] = correct_init[1] * p_1
-	correct_init[2] = correct_init[2] * p_2
+	solution_init[0] = solution_init[0] * p_0
+	solution_init[1] = solution_init[1] * p_1
+	solution_init[2] = solution_init[2] * p_2
 
-	# Correct function
-	correct_sq = [fct_sq_correct(w, correct_init[0], correct_init[1], correct_init[2]) for w in w_list]
-	ax1.plot(w_list, correct_sq, '-', color='tab:blue', markersize=1, label='%s' % correct_idx[0])
+	# solution function
+	solution_sq = [fct_sq_solution(w, solution_init[0], solution_init[1], solution_init[2]) for w in w_list]
+	ax1.plot(w_list, solution_sq, '-', color='tab:blue', markersize=1, label='%s' % solution_idx[0])
 	
 	# common functions
-	common0_sq = [fct_sq_common(w, correct_init[0], common0_init[1], common0_init[2]) for w in w_list]
-	common1_sq = [fct_sq_common(w, correct_init[1], common1_init[2], common1_init[0]) for w in w_list]
-	common2_sq = [fct_sq_common(w, correct_init[2], common2_init[0], common2_init[1]) for w in w_list]
+	common0_sq = [fct_sq_common(w, solution_init[0], common0_init[1], common0_init[2]) for w in w_list]
+	common1_sq = [fct_sq_common(w, solution_init[1], common1_init[2], common1_init[0]) for w in w_list]
+	common2_sq = [fct_sq_common(w, solution_init[2], common2_init[0], common2_init[1]) for w in w_list]
 	ax1.plot(w_list, common0_sq, '-', color='tab:brown', markersize=1, label='%s' % common0_idx[0])
 	ax1.plot(w_list, common1_sq, '-', color='tab:olive', markersize=1, label='%s' % common1_idx[0])
 	ax1.plot(w_list, common2_sq, '-', color='tab:purple', markersize=1, label='%s' % common2_idx[0])
 	
-	# Incorrect functions
-	incorrect0_sq = [fct_sq_incorrect(w, incorrect0_init[0], incorrect0_init[1], incorrect0_init[2]) for w in w_list]
-	incorrect1_sq = [fct_sq_incorrect(w, incorrect1_init[0], incorrect1_init[1], incorrect1_init[2]) for w in w_list]
-	incorrect2_sq = [fct_sq_incorrect(w, incorrect2_init[0], incorrect2_init[1], incorrect2_init[2]) for w in w_list]
-	incorrect3_sq = [fct_sq_incorrect(w, incorrect3_init[0], incorrect3_init[1], incorrect3_init[2]) for w in w_list]
-	ax1.plot(w_list, incorrect0_sq, '-', color='tab:red', markersize=1, label='%s' % incorrect0_idx[0])
-	ax1.plot(w_list, incorrect1_sq, '-', color='tab:orange', markersize=1, label='%s' % incorrect1_idx[0])
-	ax1.plot(w_list, incorrect2_sq, '-', color='tab:pink', markersize=1, label='%s' % incorrect2_idx[0])
-	ax1.plot(w_list, incorrect3_sq, '-', color='tab:green', markersize=1, label='%s' % incorrect3_idx[0])
+	# nonsolution functions
+	nonsolution0_sq = [fct_sq_nonsolution(w, nonsolution0_init[0], nonsolution0_init[1], nonsolution0_init[2]) for w in w_list]
+	nonsolution1_sq = [fct_sq_nonsolution(w, nonsolution1_init[0], nonsolution1_init[1], nonsolution1_init[2]) for w in w_list]
+	nonsolution2_sq = [fct_sq_nonsolution(w, nonsolution2_init[0], nonsolution2_init[1], nonsolution2_init[2]) for w in w_list]
+	nonsolution3_sq = [fct_sq_nonsolution(w, nonsolution3_init[0], nonsolution3_init[1], nonsolution3_init[2]) for w in w_list]
+	ax1.plot(w_list, nonsolution0_sq, '-', color='tab:red', markersize=1, label='%s' % nonsolution0_idx[0])
+	ax1.plot(w_list, nonsolution1_sq, '-', color='tab:orange', markersize=1, label='%s' % nonsolution1_idx[0])
+	ax1.plot(w_list, nonsolution2_sq, '-', color='tab:pink', markersize=1, label='%s' % nonsolution2_idx[0])
+	ax1.plot(w_list, nonsolution3_sq, '-', color='tab:green', markersize=1, label='%s' % nonsolution3_idx[0])
 
 	""" Loop for several simulations with squared scalar product for verification purpose
 	# Results of scalar products
@@ -740,104 +740,104 @@ def sim_1x3bits(n, K, kappa, num_sim):
 	"""
 
 		
-	""" Find the intersections with the correct kappa function """
+	""" Find the intersections with the solution kappa function """
 	# List of all intersections
-	inter = []
+	wr = []
 	
-	# Minimum of correct function
-	w_min = find_sq_min(correct_init[0], correct_init[1], correct_init[2])
+	# Minimum of solution function
+	w_min = find_sq_min(solution_init[0], solution_init[1], solution_init[2])
 	
 	if (w_min != None) and (w_min > 0) and (w_min < 1):
 		ax1.axvline(x=w_min, linestyle=':', color='tab:blue', markersize=1, label='w_min')
 	
-	# Intersections correct function and common functions
-	inter_kappa0_1, inter_kappa0_2 = find_inter_common(correct_init[0], correct_init[1], correct_init[2], common0_init[1], common0_init[2])
-	inter_kappa1_1, inter_kappa1_2 = find_inter_common(correct_init[1], correct_init[2], correct_init[0], common1_init[2], common1_init[0])
-	inter_kappa2_1, inter_kappa2_2 = find_inter_common(correct_init[2], correct_init[0], correct_init[1], common2_init[0], common2_init[1])
+	# Intersections solution function and common functions
+	wr_kappa0_1, wr_kappa0_2 = find_wr_common(solution_init[0], solution_init[1], solution_init[2], common0_init[1], common0_init[2])
+	wr_kappa1_1, wr_kappa1_2 = find_wr_common(solution_init[1], solution_init[2], solution_init[0], common1_init[2], common1_init[0])
+	wr_kappa2_1, wr_kappa2_2 = find_wr_common(solution_init[2], solution_init[0], solution_init[1], common2_init[0], common2_init[1])
 	
-	if (inter_kappa0_1 != None) and (inter_kappa0_1 > 0) and (inter_kappa0_1 < 1):
-		inter.append((inter_kappa0_1, 'inter_kappa0_1'))
-		# ax1.axvline(x=inter_kappa0_1, linestyle='--', color='tab:brown', markersize=1)
+	if (wr_kappa0_1 != None) and (wr_kappa0_1 > 0) and (wr_kappa0_1 < 1):
+		wr.append((wr_kappa0_1, 'wr_kappa0_1'))
+		# ax1.axvline(x=wr_kappa0_1, linestyle='--', color='tab:brown', markersize=1)
 			
-	if (inter_kappa0_2 != None) and (inter_kappa0_2 > 0) and (inter_kappa0_2 < 1):
-		inter.append((inter_kappa0_2, 'inter_kappa0_2'))
-		# ax1.axvline(x=inter_kappa0_2, linestyle=':', color='tab:brown', markersize=1)
+	if (wr_kappa0_2 != None) and (wr_kappa0_2 > 0) and (wr_kappa0_2 < 1):
+		wr.append((wr_kappa0_2, 'wr_kappa0_2'))
+		# ax1.axvline(x=wr_kappa0_2, linestyle=':', color='tab:brown', markersize=1)
 			
-	if (inter_kappa1_1 != None) and (inter_kappa1_1 > 0) and (inter_kappa1_1 < 1):
-		inter.append((inter_kappa1_1, 'inter_kappa1_1'))
-		# ax1.axvline(x=inter_kappa1_1, linestyle='--', color='tab:olive', markersize=1)
+	if (wr_kappa1_1 != None) and (wr_kappa1_1 > 0) and (wr_kappa1_1 < 1):
+		wr.append((wr_kappa1_1, 'wr_kappa1_1'))
+		# ax1.axvline(x=wr_kappa1_1, linestyle='--', color='tab:olive', markersize=1)
 		
-	if (inter_kappa1_2 != None) and (inter_kappa1_2 > 0) and (inter_kappa1_2 < 1):
-		inter.append((inter_kappa1_2, 'inter_kappa1_2'))
-		# ax1.axvline(x=inter_kappa1_2, linestyle=':', color='tab:olive', markersize=1)
+	if (wr_kappa1_2 != None) and (wr_kappa1_2 > 0) and (wr_kappa1_2 < 1):
+		wr.append((wr_kappa1_2, 'wr_kappa1_2'))
+		# ax1.axvline(x=wr_kappa1_2, linestyle=':', color='tab:olive', markersize=1)
 		
-	if (inter_kappa2_1 != None) and (inter_kappa2_1 > 0) and (inter_kappa2_1 < 1):
-		inter.append((inter_kappa2_1, 'inter_kappa2_1'))
-		# ax1.axvline(x=inter_kappa2_1, linestyle='--', color='tab:purple', markersize=1)
+	if (wr_kappa2_1 != None) and (wr_kappa2_1 > 0) and (wr_kappa2_1 < 1):
+		wr.append((wr_kappa2_1, 'wr_kappa2_1'))
+		# ax1.axvline(x=wr_kappa2_1, linestyle='--', color='tab:purple', markersize=1)
 			
-	if (inter_kappa2_2 != None) and (inter_kappa2_2 > 0) and (inter_kappa2_2 < 1):
-		inter.append((inter_kappa2_2, 'inter_kappa2_2'))
-		# ax1.axvline(x=inter_kappa2_2, linestyle=':', color='tab:purple', markersize=1)
+	if (wr_kappa2_2 != None) and (wr_kappa2_2 > 0) and (wr_kappa2_2 < 1):
+		wr.append((wr_kappa2_2, 'wr_kappa2_2'))
+		# ax1.axvline(x=wr_kappa2_2, linestyle=':', color='tab:purple', markersize=1)
 		
-	# Intersections correct function and incorrect functions	
-	inter_incorrect0_1, inter_incorrect0_2 = find_inter_incorrect(correct_init[0], correct_init[1], correct_init[2], incorrect0_init[0], incorrect0_init[1], incorrect0_init[2])
-	inter_incorrect1_1, inter_incorrect1_2 = find_inter_incorrect(correct_init[0], correct_init[1], correct_init[2], incorrect1_init[0], incorrect1_init[1], incorrect1_init[2])
-	inter_incorrect2_1, inter_incorrect2_2 = find_inter_incorrect(correct_init[0], correct_init[1], correct_init[2], incorrect2_init[0], incorrect2_init[1], incorrect2_init[2])
-	inter_incorrect3_1, inter_incorrect3_2 = find_inter_incorrect(correct_init[0], correct_init[1], correct_init[2], incorrect3_init[0], incorrect3_init[1], incorrect3_init[2])
+	# Intersections solution function and nonsolution functions	
+	wr_nonsolution0_1, wr_nonsolution0_2 = find_wr_nonsolution(solution_init[0], solution_init[1], solution_init[2], nonsolution0_init[0], nonsolution0_init[1], nonsolution0_init[2])
+	wr_nonsolution1_1, wr_nonsolution1_2 = find_wr_nonsolution(solution_init[0], solution_init[1], solution_init[2], nonsolution1_init[0], nonsolution1_init[1], nonsolution1_init[2])
+	wr_nonsolution2_1, wr_nonsolution2_2 = find_wr_nonsolution(solution_init[0], solution_init[1], solution_init[2], nonsolution2_init[0], nonsolution2_init[1], nonsolution2_init[2])
+	wr_nonsolution3_1, wr_nonsolution3_2 = find_wr_nonsolution(solution_init[0], solution_init[1], solution_init[2], nonsolution3_init[0], nonsolution3_init[1], nonsolution3_init[2])
 
-	if (inter_incorrect0_1 != None) and (inter_incorrect0_1 > 0) and (inter_incorrect0_1 < 1):
-		inter.append((inter_incorrect0_1, 'inter_incorrect0_1'))
-		# ax1.axvline(x=inter_incorrect0_1, linestyle='--', color='tab:red', markersize=1)
+	if (wr_nonsolution0_1 != None) and (wr_nonsolution0_1 > 0) and (wr_nonsolution0_1 < 1):
+		wr.append((wr_nonsolution0_1, 'wr_nonsolution0_1'))
+		# ax1.axvline(x=wr_nonsolution0_1, linestyle='--', color='tab:red', markersize=1)
 		
-	if (inter_incorrect0_2 != None) and (inter_incorrect0_2 > 0) and (inter_incorrect0_2 < 1):
-		inter.append((inter_incorrect0_2, 'inter_incorrect0_2'))
-		# ax1.axvline(x=inter_incorrect0_2, linestyle=':', color='tab:red', markersize=1)
+	if (wr_nonsolution0_2 != None) and (wr_nonsolution0_2 > 0) and (wr_nonsolution0_2 < 1):
+		wr.append((wr_nonsolution0_2, 'wr_nonsolution0_2'))
+		# ax1.axvline(x=wr_nonsolution0_2, linestyle=':', color='tab:red', markersize=1)
 		
-	if (inter_incorrect1_1 != None) and (inter_incorrect1_1 > 0) and (inter_incorrect1_1 < 1):
-		inter.append((inter_incorrect1_1, 'inter_incorrect1_1'))
-		# ax1.axvline(x=inter_incorrect1_1, linestyle='--', color='tab:orange', markersize=1)
+	if (wr_nonsolution1_1 != None) and (wr_nonsolution1_1 > 0) and (wr_nonsolution1_1 < 1):
+		wr.append((wr_nonsolution1_1, 'wr_nonsolution1_1'))
+		# ax1.axvline(x=wr_nonsolution1_1, linestyle='--', color='tab:orange', markersize=1)
 		
-	if (inter_incorrect1_2 != None) and (inter_incorrect1_2 > 0) and (inter_incorrect1_2 < 1):
-		inter.append((inter_incorrect1_2, 'inter_incorrect1_2'))
-		# ax1.axvline(x=inter_incorrect1_2, linestyle=':', color='tab:orange', markersize=1)
+	if (wr_nonsolution1_2 != None) and (wr_nonsolution1_2 > 0) and (wr_nonsolution1_2 < 1):
+		wr.append((wr_nonsolution1_2, 'wr_nonsolution1_2'))
+		# ax1.axvline(x=wr_nonsolution1_2, linestyle=':', color='tab:orange', markersize=1)
 		
-	if (inter_incorrect2_1 != None) and (inter_incorrect2_1 > 0) and (inter_incorrect2_1 < 1):
-		inter.append((inter_incorrect2_1, 'inter_incorrect2_1'))
-		# ax1.axvline(x=inter_incorrect2_1, linestyle='--', color='tab:pink', markersize=1)
+	if (wr_nonsolution2_1 != None) and (wr_nonsolution2_1 > 0) and (wr_nonsolution2_1 < 1):
+		wr.append((wr_nonsolution2_1, 'wr_nonsolution2_1'))
+		# ax1.axvline(x=wr_nonsolution2_1, linestyle='--', color='tab:pink', markersize=1)
 		
-	if (inter_incorrect2_2 != None) and (inter_incorrect2_2 > 0) and (inter_incorrect2_2 < 1):
-		inter.append((inter_incorrect2_2, 'inter_incorrect2_2'))
-		# ax1.axvline(x=inter_incorrect2_2, linestyle=':', color='tab:pink', markersize=1)
+	if (wr_nonsolution2_2 != None) and (wr_nonsolution2_2 > 0) and (wr_nonsolution2_2 < 1):
+		wr.append((wr_nonsolution2_2, 'wr_nonsolution2_2'))
+		# ax1.axvline(x=wr_nonsolution2_2, linestyle=':', color='tab:pink', markersize=1)
 		
-	if (inter_incorrect3_1 != None) and (inter_incorrect3_1 > 0) and (inter_incorrect3_1 < 1):
-		inter.append((inter_incorrect3_1, 'inter_incorrect3_1'))
-		# ax1.axvline(x=inter_incorrect3_1, linestyle='--', color='tab:green', markersize=1)
+	if (wr_nonsolution3_1 != None) and (wr_nonsolution3_1 > 0) and (wr_nonsolution3_1 < 1):
+		wr.append((wr_nonsolution3_1, 'wr_nonsolution3_1'))
+		# ax1.axvline(x=wr_nonsolution3_1, linestyle='--', color='tab:green', markersize=1)
 		
-	if (inter_incorrect3_2 != None) and (inter_incorrect3_2 > 0) and (inter_incorrect3_2 < 1):
-		inter.append((inter_incorrect3_2, 'inter_incorrect3_2'))
-		# ax1.axvline(x=inter_incorrect3_2, linestyle=':', color='tab:green', markersize=1)
+	if (wr_nonsolution3_2 != None) and (wr_nonsolution3_2 > 0) and (wr_nonsolution3_2 < 1):
+		wr.append((wr_nonsolution3_2, 'wr_nonsolution3_2'))
+		# ax1.axvline(x=wr_nonsolution3_2, linestyle=':', color='tab:green', markersize=1)
 	
 
-	""" Find rank of correct kappa	"""
+	""" Find rank of solution kappa	"""
 	
-	inter.sort(key=lambda x: x[0])
+	wr.sort(key=lambda x: x[0])
 	
-	rank, inter = find_rank(inter)
+	rank, wr = find_rank(wr)
 	
 	# Expand the lists for plotting
 	rank = [r for r in zip(rank, rank)]
-	inter = [i for i in zip(inter, inter)]
+	wr = [i for i in zip(wr, wr)]
 		
 	# Un-nest the previous lists
 	rank = list(itertools.chain.from_iterable(rank))
-	inter = list(itertools.chain.from_iterable(inter))
+	wr = list(itertools.chain.from_iterable(wr))
 		
-	# Extract abscissas for intersection points
-	inter = [tuple[0] for tuple in inter]
-	inter.insert(0, 0)
-	inter.append(1)
+	# Extract abscissas for wrsection points
+	wr = [tuple[0] for tuple in wr]
+	wr.insert(0, 0)
+	wr.append(1)
 
-	ax2.plot(inter, rank, color='tab:blue')
+	ax2.plot(wr, rank, color='tab:blue')
 
 	ax1.legend(loc='upper left', ncol=3, fancybox=True)
 	ax1.set_title(r'Combining three scalar products for K=%s and kappa=%s' %(K, kappa))

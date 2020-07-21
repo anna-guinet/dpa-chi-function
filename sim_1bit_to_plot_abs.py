@@ -166,7 +166,7 @@ def signal_2D(mu, i, key, n=3):
 
 def find_abs_w0(a):
 	"""
-	Find the point when for the scalar product of the correct guess equals 0.
+	Find the point when for the scalar product of the solution guess equals 0.
 	
 	Parameter:
 	a -- Decimal
@@ -182,9 +182,9 @@ def find_abs_w0(a):
 
 	return w0
 		
-def fct_abs_correct(w, a, p_i):
+def fct_abs_solution(w, a, p_i):
 	"""
-	Function for the scalar product of the correct guess.
+	Function for the scalar product of the solution guess.
 	
 	Parameter:
 	w -- float
@@ -205,9 +205,9 @@ def fct_abs_correct(w, a, p_i):
 		
 	return y / Decimal(8)
 		
-def fct_abs_incorrect(w, b):
+def fct_abs_nonsol(w, b):
 	"""
-	Function for the scalar product of an incorrect guess.
+	Function for the scalar product of an nonsol guess.
 	
 	Parameter:
 	w -- float
@@ -224,9 +224,9 @@ def fct_abs_incorrect(w, b):
 		
 	return y / Decimal(8)
 
-def find_inter(a, b):
+def find_wr(a, b):
 	"""
-	Find the point when for the scalar product of the correct guess equals the scalar product of an incorrect guess.
+	Find the point when for the scalar product of the solution guess equals the scalar product of an nonsol guess.
 	
 	Parameter:
 	a -- Decimal
@@ -282,34 +282,34 @@ def xor_secret_i(K, kappa, i):
 
 	return p_i
 
-def find_rank(inter, w0):
+def find_rank(wr, w0):
 	"""
-	Return the list of ranks for the correct kappa.
+	Return the list of ranks for the solution kappa.
 	
 	Parameter:
-	inter -- list of Decimal
+	wr -- list of Decimal
 	w0 -- Decimal
 	
 	Return:
 	rank -- list of integer
-	inter -- list of Decimal
+	wr -- list of Decimal
 	"""
 
 	# List of ranks
 	rank = []
 
 	# If the list is not empty, retrieve the rank in [0,1]
-	if inter:
+	if wr:
 
-		# Count number of rank increment ('inter2') and rank decrement (inter1')
-		counter_1 = sum(1 for w in inter if w > w0)
-		counter_2 = sum(-1 for w in inter if w < w0)
-		num_inter = counter_1 + counter_2
+		# Count number of rank increment ('wr2') and rank decrement (wr1')
+		counter_1 = sum(1 for w in wr if w > w0)
+		counter_2 = sum(-1 for w in wr if w < w0)
+		num_wr = counter_1 + counter_2
 		
-		rank_init = 1 + num_inter
+		rank_init = 1 + num_wr
 		rank.append(rank_init)
 		
-		for w in inter:
+		for w in wr:
 		
 			# Rank increases
 			if w > w0:
@@ -321,7 +321,7 @@ def find_rank(inter, w0):
 	else:
 		rank = [1]
 		
-	return rank, inter
+	return rank, wr
 
 def sim_1bit(n, i, K, kappa, num_sim):
 	"""
@@ -381,26 +381,26 @@ def sim_1bit(n, i, K, kappa, num_sim):
 
 	list_kappa_idx = [list_kappa_idx0, list_kappa_idx1, list_kappa_idx2]
 
-	correct_idx = [sublist for sublist in list_kappa_idx[i] if (sublist[2] == key_i[(i+1) % n]) and (sublist[3] == key_i[(i+2) % n])]
-	correct_idx = list(itertools.chain.from_iterable(correct_idx))
+	solution_idx = [sublist for sublist in list_kappa_idx[i] if (sublist[2] == key_i[(i+1) % n]) and (sublist[3] == key_i[(i+2) % n])]
+	solution_idx = list(itertools.chain.from_iterable(solution_idx))
 
-	incorrect_idx = [sublist for sublist in list_kappa_idx[i] if (sublist[0] != correct_idx[0])]
-	incorrect0_idx = incorrect_idx[0]
-	incorrect1_idx = incorrect_idx[1]
-	incorrect2_idx = incorrect_idx[2]
+	nonsol_idx = [sublist for sublist in list_kappa_idx[i] if (sublist[0] != solution_idx[0])]
+	nonsol0_idx = nonsol_idx[0]
+	nonsol1_idx = nonsol_idx[1]
+	nonsol2_idx = nonsol_idx[2]
 
 	# Find initial scalar product values
-	correct_init = scalar_init[correct_idx[1]]
+	solution_init = scalar_init[solution_idx[1]]
 
-	incorrect0_init = scalar_init[incorrect0_idx[1]]
-	incorrect1_init = scalar_init[incorrect1_idx[1]]
-	incorrect2_init = scalar_init[incorrect2_idx[1]]
+	nonsol0_init = scalar_init[nonsol0_idx[1]]
+	nonsol1_init = scalar_init[nonsol1_idx[1]]
+	nonsol2_init = scalar_init[nonsol2_idx[1]]
 
-	# Determine the sign of initial correct value depending on the activity of the register at bit i
+	# Determine the sign of initial solution value depending on the activity of the register at bit i
 	p_i = xor_secret_i(K, kappa, i)
-	correct_init = correct_init * p_i
+	solution_init = solution_init * p_i
 
-	""" Find the functions according to the kappas and the intersections with correct function """
+	""" Find the functions according to the kappas and the intersections with solution function """
 
 	# Display a figure with two subplots
 	fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5,5), gridspec_kw={"height_ratios": [2,1]}, sharex=True)
@@ -409,65 +409,65 @@ def sim_1bit(n, i, K, kappa, num_sim):
 	fig.subplots_adjust(hspace=0.2)
 	plt.setp([ax.get_xticklabels() for ax in fig.axes[:-1]], visible=False)
 	
-	# List of all intersections with the correct kappa function
-	inter = []
+	# List of all intersections with the solution kappa function
+	wr = []
 
-	# Interval of w for abscissas
+	# interval of w for abscissas
 	interval = [0, 1]
 
 	# Find the fiber such as f(w0) = 0 
-	w0 = find_abs_w0(correct_init)
+	w0 = find_abs_w0(solution_init)
 
-	incorrect0_abs = [fct_abs_incorrect(w, incorrect0_init) for w in interval]
-	incorrect1_abs = [fct_abs_incorrect(w, incorrect1_init) for w in interval]
-	incorrect2_abs = [fct_abs_incorrect(w, incorrect2_init) for w in interval]
-	ax1.plot(interval, incorrect0_abs, '-', color='tab:red', markersize=1, label='%s' % incorrect0_idx[0])
-	ax1.plot(interval, incorrect1_abs, '-', color='tab:orange', markersize=1, label='%s' % incorrect1_idx[0])
-	ax1.plot(interval, incorrect2_abs, '-', color='tab:green', markersize=1, label='%s' % incorrect2_idx[0])
+	nonsol0_abs = [fct_abs_nonsol(w, nonsol0_init) for w in interval]
+	nonsol1_abs = [fct_abs_nonsol(w, nonsol1_init) for w in interval]
+	nonsol2_abs = [fct_abs_nonsol(w, nonsol2_init) for w in interval]
+	ax1.plot(interval, nonsol0_abs, '-', color='tab:red', markersize=1, label='%s' % nonsol0_idx[0])
+	ax1.plot(interval, nonsol1_abs, '-', color='tab:orange', markersize=1, label='%s' % nonsol1_idx[0])
+	ax1.plot(interval, nonsol2_abs, '-', color='tab:green', markersize=1, label='%s' % nonsol2_idx[0])
 
-	if (correct_init > 0):
-		correct_abs = [fct_abs_correct(w, correct_init, p_i) for w in interval]
-		ax1.plot(interval, correct_abs, '-', color='tab:blue',  markersize=1, label='%s' % correct_idx[0])
+	if (solution_init > 0):
+		solution_abs = [fct_abs_solution(w, solution_init, p_i) for w in interval]
+		ax1.plot(interval, solution_abs, '-', color='tab:blue',  markersize=1, label='%s' % solution_idx[0])
 	
 	else:
 		interval_dec = [0, w0]
 		interval_inc = [w0, 1]
-		correct_abs_dec = [fct_abs_correct(w, correct_init, p_i) for w in interval_dec]
-		correct_abs_inc = [fct_abs_correct(w, correct_init, p_i) for w in interval_inc]
-		ax1.plot(interval_dec, correct_abs_dec, '-', color='tab:blue',  markersize=1, label='%s' % correct_idx[0])
-		ax1.plot(interval_inc, correct_abs_inc, '-', color='tab:blue',  markersize=1)
+		solution_abs_dec = [fct_abs_solution(w, solution_init, p_i) for w in interval_dec]
+		solution_abs_inc = [fct_abs_solution(w, solution_init, p_i) for w in interval_inc]
+		ax1.plot(interval_dec, solution_abs_dec, '-', color='tab:blue',  markersize=1, label='%s' % solution_idx[0])
+		ax1.plot(interval_inc, solution_abs_inc, '-', color='tab:blue',  markersize=1)
 
 		ax1.axvline(x=w0, linestyle=':', color='tab:blue', markersize=1, label='w_0')
 
 
-	# Intersections between correct function and incorrect functions
-	inter1_incorrect0, inter2_incorrect0 = find_inter(correct_init, incorrect0_init)
-	inter1_incorrect1, inter2_incorrect1 = find_inter(correct_init, incorrect1_init)
-	inter1_incorrect2, inter2_incorrect2 = find_inter(correct_init, incorrect2_init)
+	# intersections between solution function and nonsol functions
+	wr1_nonsol0, wr2_nonsol0 = find_wr(solution_init, nonsol0_init)
+	wr1_nonsol1, wr2_nonsol1 = find_wr(solution_init, nonsol1_init)
+	wr1_nonsol2, wr2_nonsol2 = find_wr(solution_init, nonsol2_init)
 		
-	if (inter1_incorrect0 > 0) and (inter1_incorrect0 < 1):
-		inter.append(inter1_incorrect0)
-		# ax1.axvline(x=inter1_incorrect0, linestyle='--', color='tab:red', markersize=1, label='inter1')
+	if (wr1_nonsol0 > 0) and (wr1_nonsol0 < 1):
+		wr.append(wr1_nonsol0)
+		# ax1.axvline(x=wr1_nonsol0, linestyle='--', color='tab:red', markersize=1, label='wr1')
 		
-	if (inter2_incorrect0 > 0) and (inter2_incorrect0 < 1):
-		inter.append(inter2_incorrect0)
-		# ax1.axvline(x=inter2_incorrect0, linestyle=':', color='tab:red', markersize=1, label='inter2')
+	if (wr2_nonsol0 > 0) and (wr2_nonsol0 < 1):
+		wr.append(wr2_nonsol0)
+		# ax1.axvline(x=wr2_nonsol0, linestyle=':', color='tab:red', markersize=1, label='wr2')
 		
-	if (inter1_incorrect1 > 0) and (inter1_incorrect1 < 1):
-		inter.append(inter1_incorrect1)
-		# ax1.axvline(x=inter1_incorrect1, linestyle='--', color='tab:orange', markersize=1, label='inter1')
+	if (wr1_nonsol1 > 0) and (wr1_nonsol1 < 1):
+		wr.append(wr1_nonsol1)
+		# ax1.axvline(x=wr1_nonsol1, linestyle='--', color='tab:orange', markersize=1, label='wr1')
 			
-	if (inter2_incorrect1 > 0) and (inter2_incorrect1 < 1):
-		inter.append(inter2_incorrect1)
-		# ax1.axvline(x=inter2_incorrect1, linestyle=':', color='tab:orange', markersize=1, label='inter2')
+	if (wr2_nonsol1 > 0) and (wr2_nonsol1 < 1):
+		wr.append(wr2_nonsol1)
+		# ax1.axvline(x=wr2_nonsol1, linestyle=':', color='tab:orange', markersize=1, label='wr2')
 		
-	if (inter1_incorrect2 > 0) and (inter1_incorrect2 < 1):
-		inter.append(inter1_incorrect2)
-		# ax1.axvline(x=inter1_incorrect2, linestyle='--', color='tab:green', markersize=1, label='inter1')
+	if (wr1_nonsol2 > 0) and (wr1_nonsol2 < 1):
+		wr.append(wr1_nonsol2)
+		# ax1.axvline(x=wr1_nonsol2, linestyle='--', color='tab:green', markersize=1, label='wr1')
 			
-	if (inter2_incorrect2 > 0) and (inter2_incorrect2 < 1):
-		inter.append(inter2_incorrect2)
-		# ax1.axvline(x=inter2_incorrect2, linestyle=':', color='tab:green', markersize=1, label='inter2')
+	if (wr2_nonsol2 > 0) and (wr2_nonsol2 < 1):
+		wr.append(wr2_nonsol2)
+		# ax1.axvline(x=wr2_nonsol2, linestyle=':', color='tab:green', markersize=1, label='wr2')
 
 	""" Tests loop """
 
@@ -516,30 +516,30 @@ def sim_1bit(n, i, K, kappa, num_sim):
 	# ax1.plot(w_list, scalar_10, '--', color='black',  markersize=1, label='10 loop')
 	# ax1.plot(w_list, scalar_11, '-.', color='black',  markersize=1, label='11 loop')
 
-	""" Find rank of correct kappa	"""
+	""" Find rank of solution kappa	"""
 
 	# Transform Decimal into float
 	getcontext().prec = 5
-	inter = [float(w) for w in inter]
+	wr = [float(w) for w in wr]
 
 	# Sort by w
-	inter = sorted(inter)
+	wr = sorted(wr)
 
-	rank, inter = find_rank(inter, w0)
+	rank, wr = find_rank(wr, w0)
 
 	# Expand the lists for plotting
 	rank = [r for r in zip(rank, rank)]
-	inter = [i for i in zip(inter, inter)]
+	wr = [i for i in zip(wr, wr)]
 		
 	# Un-nest the previous lists
 	rank = list(itertools.chain.from_iterable(rank))
-	inter = list(itertools.chain.from_iterable(inter))
+	wr = list(itertools.chain.from_iterable(wr))
 		
 	# Insert edges for plotting
-	inter.insert(0, 0)
-	inter.append(1)
+	wr.insert(0, 0)
+	wr.append(1)
 
-	ax2.plot(inter, rank, color='tab:blue')
+	ax2.plot(wr, rank, color='tab:blue')
 	
 	ax1.legend(loc='upper left')
 	ax1.set_title(r'One-bit strategy for K_%s=%s & kappa=%s' %(i, K[i], kappa))
