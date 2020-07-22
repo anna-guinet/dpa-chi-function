@@ -50,7 +50,8 @@ def csv_to_plot_3bits_avgrank(K, kappa, num_sim):
 	avgrank_df = load_csv(K, kappa, num_sim)
 
 	# Display a figure
-	fig = plt.figure(figsize=(5,4))
+	fig = plt.figure(figsize=(6,5))
+	fig.tight_layout()
 	plt.plot(avgrank_df['wr'], avgrank_df['avgrank'], '-', markersize=2)
 
 	# plt.legend(loc='upper right')

@@ -55,7 +55,7 @@ def csv_to_plot_1bit_one_type_avgrank(i, K, kappa, num_sim, type_sp):
 
 	# Display a figure
 	fig = plt.figure()
-	plt.plot(avgrank_df['inter'], avgrank_df['avgrank'], '-', markersize=2)
+	plt.plot(avgrank_df['wr'], avgrank_df['avgrank'], '-', markersize=2)
 
 	plt.legend(loc='upper right')
 	plt.title(r'One-bit %s strategy for K_%s=%s & kappa=%s' % (type_sp, i, K[i], kappa))
@@ -63,10 +63,10 @@ def csv_to_plot_1bit_one_type_avgrank(i, K, kappa, num_sim, type_sp):
 	plt.ylabel('Average rank')
 
 	plt.savefig('./plot/1bit_%s_num-sim=%s_K=%s_kappa=%s_i=%s_avgrank.png' % (type_sp, num_sim, K, kappa, i))
-	# plt.close(fig)
+	plt.close(fig)
 	
 	# Show the plotss
-	plt.show()
+	# plt.show()
 
 def csv_to_plot_1bit_two_types_avgrank(i, K, kappa, num_sim):
 	"""
@@ -88,8 +88,8 @@ def csv_to_plot_1bit_two_types_avgrank(i, K, kappa, num_sim):
 	# Display a figure
 	fig = plt.figure(figsize=(4,5))
 
-	plt.plot(avgrank_abs_df['inter'], avgrank_abs_df['avgrank'], '-', markersize=2, color='tab:blue', label='abs')
-	plt.plot(avgrank_sq_df['inter'], avgrank_sq_df['avgrank'], '--', markersize=2, color='tab:purple', label='sq')
+	plt.plot(avgrank_abs_df['wr'], avgrank_abs_df['avgrank'], '-', markersize=2, color='tab:blue', label='abs')
+	plt.plot(avgrank_sq_df['wr'], avgrank_sq_df['avgrank'], '--', markersize=2, color='tab:purple', label='sq')
 
 	plt.legend(loc='upper right')
 	plt.title(r'One-bit strategy for K_%s=%s & kappa=%s' %(i, K[i], kappa))

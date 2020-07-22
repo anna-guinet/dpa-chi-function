@@ -50,7 +50,7 @@ def csv_to_csv_3bits_avgrank(K, kappa, num_sim):
 
 	frames = []
 	for i in range(64):
-		df = load_csv(K, kappa, m, num_sim, i+1)
+		df = load_csv(K, kappa, num_sim, i+1)
 		frames.append(df)
 
 	# Group dataframes in one

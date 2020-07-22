@@ -52,11 +52,11 @@ def csv_to_plot_1x3bits_one_type_avgrank(K, kappa, num_sim, type_sp):
 	avgrank_df = load_csv(K, kappa, num_sim, type_sp)
 
 	# Display a figure
-	fig = plt.figure(figsize=(5,5))
+	fig = plt.figure(figsize=(6,6))
 	plt.plot(avgrank_df['wr'], avgrank_df['avgrank'], '-', markersize=2)
 
 	plt.legend(loc='upper right')
-	plt.title(r'Combining three scalar products for K=%s & kappa=%s' %(type_sp, K, kappa))
+	plt.title(r'Combining three %s scalar products for K=%s & kappa=%s' %(type_sp, K, kappa))
 	plt.xlabel('Weight w')
 	plt.ylabel('Average rank')
 

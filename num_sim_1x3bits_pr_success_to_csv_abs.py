@@ -23,7 +23,7 @@ def gen_key(i, n=3):
 	Eg: for i = 1, key = [[ 0, 0, 0 ], [ 0, 0, 1 ], [ 1, 0, 0 ], [ 1, 0, 1 ]]
 
 	Note: We do not take into account key_i as it adds only symmetry the signal power consumption 
-	(and the output of the scalar product by extension). In fact, in the algorithm, 
+	(and the output of the scalar product by extension). In fact, in the algorithm,
 	we set the i-th bit as 0. 
 
 	Parameters:
@@ -936,7 +936,7 @@ def sim_1x3bits_to_csv(K, kappa, num_sim):
 	Return:
 	NaN
 	"""
-	rank_wr_list = sim_1x3bits(K, kappa, m, num_sim)
+	rank_wr_list = sim_1x3bits(K, kappa, num_sim)
 	
 	""" Save data in a DataFrame """
 	

@@ -55,7 +55,7 @@ def csv_to_plot_3bits(K, kappa, num_sim):
 
 	"""" Save plot for probabilities of success of all ranks """
 
-	fig = plt.figure(figsize=(5,4))
+	fig = plt.figure(figsize=(6,6))
 	num_rank = 1
 	for frame in frames:
 		plt.plot(frame['wr'], frame['pr_success'], '-', markersize=2, label='Rank %s' % (num_rank))
@@ -66,7 +66,7 @@ def csv_to_plot_3bits(K, kappa, num_sim):
 	plt.xlabel('Weight w')
 	plt.ylabel('Probability of success')
 
-	plt.savefig('./plot/3bits_num-sim=%s_K=%s_kappa=%s.pdf' % (num_sim, K, kappa))
+	plt.savefig('./plot/3bits_num-sim=%s_K=%s_kappa=%s.png' % (num_sim, K, kappa))
 	plt.close(fig)
 
 def main(unused_command_line_args):

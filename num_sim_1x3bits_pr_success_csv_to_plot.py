@@ -51,22 +51,22 @@ def csv_to_plot_1x3bits_one_type(K, kappa, num_sim, type_sp):
 	NaN
 	"""
 
-	rank_inter_df1 = load_csv(K, kappa, num_sim, 1, type_sp)
-	rank_inter_df2 = load_csv(K, kappa, num_sim, 2, type_sp)
-	rank_inter_df3 = load_csv(K, kappa, num_sim, 3, type_sp)
-	rank_inter_df4 = load_csv(K, kappa, num_sim, 4, type_sp)
-	rank_inter_df5 = load_csv(K, kappa, num_sim, 5, type_sp)
-	rank_inter_df6 = load_csv(K, kappa, num_sim, 6, type_sp)
-	rank_inter_df7 = load_csv(K, kappa, num_sim, 7, type_sp)
-	rank_inter_df8 = load_csv(K, kappa, num_sim, 8, type_sp)
+	rank_wr_df1 = load_csv(K, kappa, num_sim, 1, type_sp)
+	rank_wr_df2 = load_csv(K, kappa, num_sim, 2, type_sp)
+	rank_wr_df3 = load_csv(K, kappa, num_sim, 3, type_sp)
+	rank_wr_df4 = load_csv(K, kappa, num_sim, 4, type_sp)
+	rank_wr_df5 = load_csv(K, kappa, num_sim, 5, type_sp)
+	rank_wr_df6 = load_csv(K, kappa, num_sim, 6, type_sp)
+	rank_wr_df7 = load_csv(K, kappa, num_sim, 7, type_sp)
+	rank_wr_df8 = load_csv(K, kappa, num_sim, 8, type_sp)
 
 	"""" Save plot for probabilities of success of all ranks """
 
 	fig = plt.figure()
 	num_rank = 1
-	for frame in [rank_inter_df1, rank_inter_df2, rank_inter_df3, rank_inter_df4,
-				  rank_inter_df5, rank_inter_df6, rank_inter_df7, rank_inter_df8]:
-		plt.plot(frame['inter'], frame['pr_success'], '-', markersize=2, label='rank %s' % (num_rank))
+	for frame in [rank_wr_df1, rank_wr_df2, rank_wr_df3, rank_wr_df4,
+				  rank_wr_df5, rank_wr_df6, rank_wr_df7, rank_wr_df8]:
+		plt.plot(frame['wr'], frame['pr_success'], '-', markersize=2, label='rank %s' % (num_rank))
 		num_rank += 1
 
 	plt.legend(loc='upper right')
@@ -81,7 +81,7 @@ def csv_to_plot_1x3bits_one_type(K, kappa, num_sim, type_sp):
 
 	fig1 = plt.figure()
 	plt.title(r'Combining three %s scalar products for K=%s & kappa=%s | Rank 1' %(type_sp, K, kappa))
-	plt.plot(rank_inter_df1['inter'], rank_inter_df1['pr_success'], '-', color='tab:blue', markersize=2, label='rank 1')
+	plt.plot(rank_wr_df1['wr'], rank_wr_df1['pr_success'], '-', color='tab:blue', markersize=2, label='rank 1')
 	plt.xlabel('Weight w')
 	plt.ylabel('Probability of success')
 	plt.ylim([0, 1.08])
@@ -91,11 +91,11 @@ def csv_to_plot_1x3bits_one_type(K, kappa, num_sim, type_sp):
 
 	# Plots for rank 2 to rank 8
 	num_rank = 2
-	for frame in [rank_inter_df2, rank_inter_df3, rank_inter_df4,
-				  rank_inter_df5, rank_inter_df6, rank_inter_df7, rank_inter_df8]:
+	for frame in [rank_wr_df2, rank_wr_df3, rank_wr_df4,
+				  rank_wr_df5, rank_wr_df6, rank_wr_df7, rank_wr_df8]:
 		fig = plt.figure()
 		plt.title(r'Combining three %s scalar products for K=%s & kappa=%s | Rank %s' %(type_sp, K, kappa, num_rank))
-		plt.plot(frame['inter'], frame['pr_success'], '-', markersize=2, label='rank %s' % num_rank)
+		plt.plot(frame['wr'], frame['pr_success'], '-', markersize=2, label='rank %s' % num_rank)
 		plt.xlabel('Weight w')
 		plt.ylabel('Probability of success')
 		plt.ylim([-0.01, 0.18])
@@ -119,23 +119,23 @@ def csv_to_plot_1x3bits_two_types(K, kappa, num_sim):
 	NaN
 	"""
 
-	rank_inter_df1_abs = load_csv(K, kappa, num_sim, 1, 'abs')
-	rank_inter_df2_abs = load_csv(K, kappa, num_sim, 2, 'abs')
-	rank_inter_df3_abs = load_csv(K, kappa, num_sim, 3, 'abs')
-	rank_inter_df4_abs = load_csv(K, kappa, num_sim, 4, 'abs')
-	rank_inter_df5_abs = load_csv(K, kappa, num_sim, 5, 'abs')
-	rank_inter_df6_abs = load_csv(K, kappa, num_sim, 6, 'abs')
-	rank_inter_df7_abs = load_csv(K, kappa, num_sim, 7, 'abs')
-	rank_inter_df8_abs = load_csv(K, kappa, num_sim, 8, 'abs')
+	rank_wr_df1_abs = load_csv(K, kappa, num_sim, 1, 'abs')
+	rank_wr_df2_abs = load_csv(K, kappa, num_sim, 2, 'abs')
+	rank_wr_df3_abs = load_csv(K, kappa, num_sim, 3, 'abs')
+	rank_wr_df4_abs = load_csv(K, kappa, num_sim, 4, 'abs')
+	rank_wr_df5_abs = load_csv(K, kappa, num_sim, 5, 'abs')
+	rank_wr_df6_abs = load_csv(K, kappa, num_sim, 6, 'abs')
+	rank_wr_df7_abs = load_csv(K, kappa, num_sim, 7, 'abs')
+	rank_wr_df8_abs = load_csv(K, kappa, num_sim, 8, 'abs')
 
-	rank_inter_df1_sq = load_csv(K, kappa, num_sim, 1, 'sq')
-	rank_inter_df2_sq = load_csv(K, kappa, num_sim, 2, 'sq')
-	rank_inter_df3_sq = load_csv(K, kappa, num_sim, 3, 'sq')
-	rank_inter_df4_sq = load_csv(K, kappa, num_sim, 4, 'sq')
-	rank_inter_df5_sq = load_csv(K, kappa, num_sim, 5, 'sq')
-	rank_inter_df6_sq = load_csv(K, kappa, num_sim, 6, 'sq')
-	rank_inter_df7_sq = load_csv(K, kappa, num_sim, 7, 'sq')
-	rank_inter_df8_sq = load_csv(K, kappa, num_sim, 8, 'sq')
+	rank_wr_df1_sq = load_csv(K, kappa, num_sim, 1, 'sq')
+	rank_wr_df2_sq = load_csv(K, kappa, num_sim, 2, 'sq')
+	rank_wr_df3_sq = load_csv(K, kappa, num_sim, 3, 'sq')
+	rank_wr_df4_sq = load_csv(K, kappa, num_sim, 4, 'sq')
+	rank_wr_df5_sq = load_csv(K, kappa, num_sim, 5, 'sq')
+	rank_wr_df6_sq = load_csv(K, kappa, num_sim, 6, 'sq')
+	rank_wr_df7_sq = load_csv(K, kappa, num_sim, 7, 'sq')
+	rank_wr_df8_sq = load_csv(K, kappa, num_sim, 8, 'sq')
 
 	"""" Save plot for probabilities of success for all ranks """
 
@@ -143,13 +143,13 @@ def csv_to_plot_1x3bits_two_types(K, kappa, num_sim):
 	color_list = ('tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:grey')
 
 	num_rank = 0 
-	for frame in [rank_inter_df1_abs, rank_inter_df2_abs, rank_inter_df3_abs, rank_inter_df4_abs, rank_inter_df5_abs, rank_inter_df6_abs, rank_inter_df7_abs, rank_inter_df8_abs]:
-		plt.plot(frame['inter'], frame['pr_success'], '-', color=color_list[num_rank], markersize=2, label='Rank %s (abs)' % (num_rank + 1))
+	for frame in [rank_wr_df1_abs, rank_wr_df2_abs, rank_wr_df3_abs, rank_wr_df4_abs, rank_wr_df5_abs, rank_wr_df6_abs, rank_wr_df7_abs, rank_wr_df8_abs]:
+		plt.plot(frame['wr'], frame['pr_success'], '-', color=color_list[num_rank], markersize=2, label='Rank %s (abs)' % (num_rank + 1))
 		num_rank += 1
 
 	num_rank = 0 
-	for frame in [rank_inter_df1_sq, rank_inter_df2_sq, rank_inter_df3_sq, rank_inter_df4_sq, rank_inter_df5_sq, rank_inter_df6_sq, rank_inter_df7_sq, rank_inter_df8_sq]:
-		plt.plot(frame['inter'], frame['pr_success'], '--', color=color_list[num_rank], markersize=2, label='Rank %s (sq)' % (num_rank + 1))
+	for frame in [rank_wr_df1_sq, rank_wr_df2_sq, rank_wr_df3_sq, rank_wr_df4_sq, rank_wr_df5_sq, rank_wr_df6_sq, rank_wr_df7_sq, rank_wr_df8_sq]:
+		plt.plot(frame['wr'], frame['pr_success'], '--', color=color_list[num_rank], markersize=2, label='Rank %s (sq)' % (num_rank + 1))
 		num_rank += 1
 
 	plt.legend(loc='upper left', ncol=2, fancybox=True, fontsize = 'small')
@@ -157,17 +157,17 @@ def csv_to_plot_1x3bits_two_types(K, kappa, num_sim):
 	plt.xlabel('Weight w')
 	plt.ylabel('Probability of success')
 	fig.tight_layout()
-	plt.savefig('./plot/1x3bits_num-sim=%s_K=%s_kappa=%s.interval' % (num_sim, K, kappa))
+	plt.savefig('./plot/1x3bits_num-sim=%s_K=%s_kappa=%s.png' % (num_sim, K, kappa))
 	plt.close(fig)
 
 	"""" Save plot for probabilities of success for ranks 2, 3 """
 
 	fig23 = plt.figure(figsize=(5,5))
 	# plt.title(r'Combining three scalar products for K=%s & kappa=%s | Ranks 2 and 3' %(K, kappa))
-	plt.plot(rank_inter_df2_abs['inter'], rank_inter_df2_abs['pr_success'], '-', color='tab:orange', markersize=2, label='Rank 2 (abs)')
-	plt.plot(rank_inter_df2_sq['inter'], rank_inter_df2_sq['pr_success'], '-', color='tab:purple', markersize=2, label='Rank 2 (sq)')
-	plt.plot(rank_inter_df3_abs['inter'], rank_inter_df3_abs['pr_success'], '-', color='tab:green', markersize=2, label='Rank 3 (abs)')
-	plt.plot(rank_inter_df3_sq['inter'], rank_inter_df3_sq['pr_success'], '-', color='tab:red', markersize=2, label='Rank 3 (sq)')
+	plt.plot(rank_wr_df2_abs['wr'], rank_wr_df2_abs['pr_success'], '-', color='tab:orange', markersize=2, label='Rank 2 (abs)')
+	plt.plot(rank_wr_df2_sq['wr'], rank_wr_df2_sq['pr_success'], '-', color='tab:purple', markersize=2, label='Rank 2 (sq)')
+	plt.plot(rank_wr_df3_abs['wr'], rank_wr_df3_abs['pr_success'], '-', color='tab:green', markersize=2, label='Rank 3 (abs)')
+	plt.plot(rank_wr_df3_sq['wr'], rank_wr_df3_sq['pr_success'], '-', color='tab:red', markersize=2, label='Rank 3 (sq)')
 	plt.xlabel('Weight w')
 	plt.ylabel('Probability of success')
 	plt.ylim([-0.01, 0.258])
@@ -180,8 +180,8 @@ def csv_to_plot_1x3bits_two_types(K, kappa, num_sim):
 
 	fig1 = plt.figure()
 	plt.title(r'Combining three scalar products for K=%s & kappa=%s | Rank 1' %(K, kappa))
-	plt.plot(rank_inter_df1_abs['inter'], rank_inter_df1_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
-	plt.plot(rank_inter_df1_sq['inter'], rank_inter_df1_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
+	plt.plot(rank_wr_df1_abs['wr'], rank_wr_df1_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
+	plt.plot(rank_wr_df1_sq['wr'], rank_wr_df1_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
 	plt.xlabel('Weight w')
 	plt.ylabel('Probability of success')
 	plt.ylim([0, 1.08])
@@ -193,8 +193,8 @@ def csv_to_plot_1x3bits_two_types(K, kappa, num_sim):
 	# Plots for rank 2 to rank 8
 	fig2 = plt.figure()
 	plt.title(r'Combining three scalar products for K=%s & kappa=%s | Rank 2' %(K, kappa))
-	plt.plot(rank_inter_df2_abs['inter'], rank_inter_df2_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
-	plt.plot(rank_inter_df2_sq['inter'], rank_inter_df2_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
+	plt.plot(rank_wr_df2_abs['wr'], rank_wr_df2_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
+	plt.plot(rank_wr_df2_sq['wr'], rank_wr_df2_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
 	plt.xlabel('Weight w')
 	plt.ylabel('Probability of success')
 	plt.ylim([-0.01, 0.258])
@@ -204,8 +204,8 @@ def csv_to_plot_1x3bits_two_types(K, kappa, num_sim):
 
 	fig3 = plt.figure()
 	plt.title(r'Combining three scalar products for K=%s & kappa=%s | Rank 3' %(K, kappa))
-	plt.plot(rank_inter_df3_abs['inter'], rank_inter_df3_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
-	plt.plot(rank_inter_df3_sq['inter'], rank_inter_df3_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
+	plt.plot(rank_wr_df3_abs['wr'], rank_wr_df3_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
+	plt.plot(rank_wr_df3_sq['wr'], rank_wr_df3_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
 	plt.xlabel('Weight w')
 	plt.ylabel('Probability of success')
 	plt.ylim([-0.01, 0.258])
@@ -215,8 +215,8 @@ def csv_to_plot_1x3bits_two_types(K, kappa, num_sim):
 
 	fig4 = plt.figure()
 	plt.title(r'Combining three scalar products for K=%s & kappa=%s | Rank 4' %(K, kappa))
-	plt.plot(rank_inter_df4_abs['inter'], rank_inter_df4_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
-	plt.plot(rank_inter_df4_sq['inter'], rank_inter_df4_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
+	plt.plot(rank_wr_df4_abs['wr'], rank_wr_df4_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
+	plt.plot(rank_wr_df4_sq['wr'], rank_wr_df4_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
 	plt.xlabel('Weight w')
 	plt.ylabel('Probability of success')
 	plt.ylim([-0.01, 0.258])
@@ -226,8 +226,8 @@ def csv_to_plot_1x3bits_two_types(K, kappa, num_sim):
 
 	fig5 = plt.figure()
 	plt.title(r'Combining three scalar products for K=%s & kappa=%s | Rank 5' %(K, kappa))
-	plt.plot(rank_inter_df5_abs['inter'], rank_inter_df5_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
-	plt.plot(rank_inter_df5_sq['inter'], rank_inter_df5_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
+	plt.plot(rank_wr_df5_abs['wr'], rank_wr_df5_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
+	plt.plot(rank_wr_df5_sq['wr'], rank_wr_df5_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
 	plt.xlabel('Weight w')
 	plt.ylabel('Probability of success')
 	plt.ylim([-0.01, 0.258])
@@ -237,8 +237,8 @@ def csv_to_plot_1x3bits_two_types(K, kappa, num_sim):
 
 	fig6 = plt.figure()
 	plt.title(r'Combining three scalar products for K=%s & kappa=%s | Rank 6' %(K, kappa))
-	plt.plot(rank_inter_df6_abs['inter'], rank_inter_df6_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
-	plt.plot(rank_inter_df6_sq['inter'], rank_inter_df6_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
+	plt.plot(rank_wr_df6_abs['wr'], rank_wr_df6_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
+	plt.plot(rank_wr_df6_sq['wr'], rank_wr_df6_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
 	plt.legend(loc='upper right')
 	plt.xlabel('Weight w')
 	plt.ylabel('Probability of success')
@@ -247,8 +247,8 @@ def csv_to_plot_1x3bits_two_types(K, kappa, num_sim):
 
 	fig7 = plt.figure()
 	plt.title(r'Combining three scalar products for K=%s & kappa=%s | Rank 7' %(K, kappa))
-	plt.plot(rank_inter_df7_abs['inter'], rank_inter_df7_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
-	plt.plot(rank_inter_df7_sq['inter'], rank_inter_df7_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
+	plt.plot(rank_wr_df7_abs['wr'], rank_wr_df7_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
+	plt.plot(rank_wr_df7_sq['wr'], rank_wr_df7_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
 	plt.xlabel('Weight w')
 	plt.ylabel('Probability of success')
 	plt.ylim([-0.01, 0.258])
@@ -258,8 +258,8 @@ def csv_to_plot_1x3bits_two_types(K, kappa, num_sim):
 
 	fig8 = plt.figure()
 	plt.title(r'Combining three scalar products for K=%s & kappa=%s | Rank 8' %(K, kappa))
-	plt.plot(rank_inter_df8_abs['inter'], rank_inter_df8_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
-	plt.plot(rank_inter_df8_sq['inter'], rank_inter_df8_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
+	plt.plot(rank_wr_df8_abs['wr'], rank_wr_df8_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
+	plt.plot(rank_wr_df8_sq['wr'], rank_wr_df8_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
 	plt.xlabel('Weight w')
 	plt.ylabel('Probability of success')
 	plt.ylim([-0.01, 0.258])
