@@ -1,6 +1,15 @@
 # Investigating Differential Power Analysis on the Chi Function
 
-Written in Python 3.7.2.
+Written in Python 3.7.2 by Anna Guinet.
+
+## Input parameters
+
+The scripts take in command line the following parameters:
+- ```i``` an integer in {0, 1, 2}. This is the i-th studied bit of the first chi row.
+- ```K``` a three bit value (e.g., 001). This is the initial the secret state of length three bits.
+- ```kappa``` a three bit value (e.g., 010). This is an intermidiate value. Kappa is the first three bits of the output of the linear layer.
+- ```num_sim``` an integer (e.g., 1000). This is the number of simulations.
+- ```mode``` an integer in {1, 2} or {1, 2, 3} depending on the script. This is an option to compile the code for absolute (1), squared (2) or both (3) scalar products.
 
 ## Plot scalar product functions for one simulation
 
