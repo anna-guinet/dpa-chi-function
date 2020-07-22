@@ -742,7 +742,7 @@ def sim_1x3bits(n, K, kappa, num_sim):
 	for i in range(n):
 
 		# Scalar product <S-ref, P>
-		scalar_init_i = np.dot(S_ref[i], P_init_i)
+		scalar_init_i = np.dot(S_ref[i], P_init)
 		scalar_init += [scalar_init_i]
 	
 	# Scalar product for i = 0
@@ -858,7 +858,7 @@ def sim_1x3bits(n, K, kappa, num_sim):
 	""" Find the functions according to the kappas and the intersections with solution function """
 
 	# Display a figure with two subplots
-	fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6,5), gridspec_kw={"height_ratios": [2,1]}, sharex=True)
+	fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6,6), gridspec_kw={"height_ratios": [1.8,1]}, sharex=True)
 	
 	# Make subplots close to each other and hide x ticks for all but bottom plot.
 	fig.subplots_adjust(hspace=0.2)
@@ -1091,7 +1091,7 @@ def sim_1x3bits(n, K, kappa, num_sim):
 					wr.append((wr1_common2, 'wr1'))
 					# ax1.axvline(x=wr1_common2, linestyle='-', color='tab:purple', markersize=1, label='wr1')
 
-	""" Test loop """
+	""" Test loop
 	# Results of scalar products
 	scalar_000_abs = []
 	scalar_001_abs = []
@@ -1164,7 +1164,7 @@ def sim_1x3bits(n, K, kappa, num_sim):
 	ax1.plot(w_list, scalar_101_abs, ':', color='black',  markersize=4, label='101')
 	ax1.plot(w_list, scalar_110_abs, ':', color='black', markersize=4, label='110')
 	ax1.plot(w_list, scalar_111_abs, ':', color='black', markersize=4, label='111')
-	
+	"""
 
 	""" Find rank of solution kappa	"""
 
@@ -1198,7 +1198,7 @@ def sim_1x3bits(n, K, kappa, num_sim):
 	ax2.set_ylabel('Rank kappa solution')
 	ax2.set_xlabel('Weight w')
 	# ax2.invert_yaxis()
-	ax2.set_ylim([8, 0])
+	ax2.set_ylim([9, 0])
 	
 
 	fig.tight_layout()

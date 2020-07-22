@@ -624,7 +624,7 @@ def sim_1x3bits(n, K, kappa, num_sim):
 	
 	""" Find the functions according to the kappas """
 	# Display a figure with two subplots
-	fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6,5), gridspec_kw={"height_ratios": [2,1]}, sharex=True)
+	fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6,6), gridspec_kw={"height_ratios": [2,1]}, sharex=True)
 	
 	# Make subplots close to each other and hide x ticks for all but bottom plot.
 	fig.subplots_adjust(hspace=0.2)
@@ -845,12 +845,12 @@ def sim_1x3bits(n, K, kappa, num_sim):
 	ax2.set_ylabel('Rank kappa solution')
 	ax2.set_xlabel('Weight w')
 	# ax2.invert_yaxis()
-	ax2.set_ylim([8, 0])
+	ax2.set_ylim([9, 0])
 	
 
 	fig.tight_layout()
 	# plt.show()
-	plt.savefig('./plot/sim_1x3bits_sq_K=%s_kappa=%s_#%s.pnf' % (K, kappa, num_sim))
+	plt.savefig('./plot/sim_1x3bits_sq_K=%s_kappa=%s_#%s.png' % (K, kappa, num_sim))
 	plt.close(fig)
 
 def main(unused_command_line_args):
