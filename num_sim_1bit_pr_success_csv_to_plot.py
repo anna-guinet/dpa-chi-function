@@ -3,7 +3,7 @@
 """SUCCESS PROBA DPA 1-BIT CHI ROW & 1-BIT K"""
 
 __author__      = "Anna Guinet"
-__email__		= "a.guinet@cs.ru.nl"
+__email__       = "email@annagui.net"
 __version__ 	= "2.0"
 
 import pandas as pd

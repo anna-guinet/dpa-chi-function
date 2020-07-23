@@ -3,7 +3,7 @@
 """DPA SIMULATION 3-BIT CHI ROW & 1-BIT K"""
 
 __author__      = "Anna Guinet"
-__email__       = "a.guinet@cs.ru.nl"
+__email__       = "email@annagui.net"
 __version__     = "3.0"
 
 import numpy as np
