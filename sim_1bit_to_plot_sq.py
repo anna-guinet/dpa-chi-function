@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 
-"""DPA SIMULATION 3-BIT CHI ROW & 1-BIT K"""
+"""DPA ON KECCAK n-BIT CHI ROW & 1-BIT K
+
+Save the figures for a simulation which display the outcome of a test
+according to the SNR, in order to recover kappa bits. 
+"""
 
 __author__      = "Anna Guinet"
 __email__       = "email@annagui.net"
-__version__     = "3.0"
+__version__     = "3.1"
 
 import numpy as np
 import itertools
@@ -12,86 +16,120 @@ from decimal import *
 import math
 import matplotlib.pylab as plt
 import random
+
 import argparse
 import time
 import sys
 
-
-def gen_key_i(i, kappa='000', K='0'):
-	""" 
-	Create key value where key = kappa, except for bit i: key_i = kappa_i XOR K
-	
-	Parameters:
-	kappa -- string (default '000')
-	K -- string (default '0')
-	i -- integer in [0,n-1]
-	
-	Return:
-	key_i -- list of bool
+def noise(mu):
 	"""
+	Compute a noise power consumption vector R for each message mu. 
 
+	Parameter:
+	mu -- list of Bool
+
+	Return:
+	R -- list of integers, length 2^n
+	"""
+	R = []
+
+	# For each message mu
+	for j in range(len(mu)):
+		
+		# Activity of noise part
+		if (len(mu) == 32):
+			d = random.gauss(0, 2)
+		elif (len(mu) == 8):
+			d = random.gauss(0, 1)
+
+		# R = SUM_i (-1)^d_i
+		R.append(d)
+
+	return R
+
+def gen_key_i(i, kappa, K):
+	"""
+	Create key value where key equals kappa, except:
+	key_(i mod n) = kappa_(i mod n) XOR K_(i mod n)
+
+	Parameters:
+	i 	  -- integer in [0,n-1]
+	kappa -- string
+	K 	  -- string
+
+	Return:
+	key -- list of bool
+	"""
 	# Transform string into list of booleans
 	kappa = list(kappa)
 	kappa = [bool(int(j)) for j in kappa]
 	
-	K = bool(int(K))
-	
+	K = list(K)
+	K = [bool(int(j)) for j in K]
+
 	# Initialize new key value
 	key_i = kappa.copy()
 	
 	# XOR at indice i
-	key_i[i] = K ^ kappa[i]
+	key_i[i] = K[i] ^ kappa[i]
 	
 	return key_i
 
-def gen_key(i, n=3):
-	""" 
-	Create key value where key = kappa, except for bit i: key_i = kappa_i XOR K = 0
-	Eg: for i = 1, key = [[ 0, 0, 0 ], [ 0, 0, 1 ], [ 1, 0, 0 ], [ 1, 0, 1 ]]
-	
-	Note: We do not take into account key_i as it adds only symmetry the signal power consumption.
-	
+def gen_key(i, n):
+	"""
+	Generate all possible key values for key_(i+2 mod n) and key_(i+1 mod n), regardless the i-th bit:
+	- key_(i mod n) = kappa_i XOR K = 0
+	- key_(i+1 mod n) = kappa_(i+1 mod n)
+	- key_(i+2 mod n) = kappa_(i+2 mod n)
+	- key_(i+3 mod n) = 0 if n = 5 
+	- key_(i+4 mod n) = 0 if n = 5
+
+	Eg: for i = 1, n = 5, key = [[ 0, 0, 0, 0, 0 ], [ 0, 0, 0, 1, 0 ], [ 0, 0, 1, 0, 0 ], [ 0, 0, 1, 1, 0 ]]
+
 	Parameters:
 	i -- integer in [0,n-1]
-	n -- integer (default 3)
-	
-	Return:
-	key -- 2D list of bool, size n x 2^(n-1)
-	"""
+	n -- integer
 
-	# All possible values for n-1 bits
+	Return:
+	key -- 2D list, size n x 4
+	"""
+	# All possible values for 2 bits
 	key = list(itertools.product([bool(0), bool(1)], repeat=2))
 
-	# Trasnform nested tuples into nested lists
+	# Transform nested tuples into nested lists
 	key = [list(j) for j in key]
+
+	# Insert 'False' as the i-th, (i+3)-th and (i+4)-th positions
+	if n == 5:
+		key_extend = [j.insert((i+3) % n, bool(0)) for j in key]
+		key_extend = [j.insert((i+4) % n, bool(0)) for j in key]
 
 	# Insert 'False' as the i-th position
 	key_extend = [j.insert(i % n, bool(0)) for j in key]
-	
+
 	return key
 
-def signal_1D(mu, i, key_i, n=3):
+def signal_1D(mu, i, key_i, n):
 	"""
-	Generate signal power consumption S values for a secret state key, for all messages mu. 
+	Generate signal power consumption S values for a key, for all messages mu. 
 	
 	Parameters:
-	mu -- 2D list of bool, size n x 2^n
-	i -- integer in [0,n-1]
+	mu 	  -- 2D list of bool, size n x 2^n
+	i 	  -- integer in [0,n-1]
 	key_i -- list of bool
-	n -- integer (default 3)
+	n 	  -- integer
 	
 	Return:
 	S -- list of integers, length 2^n
 	"""
-	
 	S = []
 
 	# For each message mu
-	for j in range(2**n):
+	for j in range(len(mu)):
 			
 		# Activity of the first storage cell of the register
 		d = key_i[i] ^ mu[j][i] ^ ((key_i[(i+1) % n] ^ mu[j][(i+1) % n] ^ bool(1)) & (key_i[(i+2) % n] ^ mu[j][(i+2) % n]))
-		
+
 		# Power consumption model
 		S_j = (-1)**(d)
 	
@@ -99,166 +137,220 @@ def signal_1D(mu, i, key_i, n=3):
 
 	return S
 
-def signal_2D(mu, i, key, n=3):
+def signal_2D(mu, i, key, n):
 	"""
-	Generate signal power consumption S values for a 3-bit kappa and a 1-bit K, for all messages mu.
-	
+	Generate signal power consumption S values for all messages mu.
+
 	'key' is a value such as key = kappa, except for bit i: key_i = kappa_i XOR K = 0
-	
+
 	Parameters:
-	mu -- 2D list of bool, size n x 2^n
-	i -- integer in [0,n-1]
+	mu  -- 2D list of bool, size n x 2^n
+	i   -- integer in [0,n-1]
 	key -- list of bool
-	n -- integer (default 3)
-	
+	n   -- integer
+
 	Return:
-	S -- 2D list of integers, size 2^n x 2^(n-1)
-	"""
+	S -- 2D list of integers, size 2^n x 2^n
+	"""	
 	S = []
-	
+
 	# For each key value
-	#for l in range(2**n):
-	for l in range(2**(n-1)):
-	
+	for l in range(len(key)):
+
 		S_l = []
 
 		# For each message mu value
-		for j in range(2**n):
-			
+		for j in range(len(mu)):
+
 			# Activity of the first storage cell of the register
 			d = key[l][i] ^ mu[j][i] ^ ((key[l][(i+1) % n] ^ mu[j][(i+1) % n] ^ bool(1)) & (key[l][(i+2) % n] ^ mu[j][(i+2) % n]))
-			#d = mu[j][i] ^ ((key[l][(i+1) % n] ^ mu[j][(i+1) % n] ^ bool(1)) & (key[l][(i+2) % n] ^ mu[j][(i+2) % n]))
-				
+
 			S_lj = (-1)**(d)
-				
+
 			S_l.append(S_lj)
-		
+
 		S += [S_l]
-	
+
 	return S
 
-def noise(n=3):
+def kappa_idx(n):
 	"""
-	Compute a noise power consumption R vector for each possible message mu. 
-	
+	Provide scalar products indexes for kappa values.
+
 	Parameter:
-	n -- integer (defaut 3)
-	
+	n -- integer
+
 	Return:
-	R -- list of integers, length 2^n
+	list_kappa_idx -- list of lists
 	"""
-	R = []
+	list_kappa_idx = []
 
-	# For each message mu
-	for j in range(2**n):
-		
-		# Activity of noise part
-		d = random.gauss(0, 1)
+	if n == 5:
+		list_kappa_idx0 = [['*00**', 0, False, False],
+						   ['*01**', 1, False, True],
+						   ['*10**', 2, True, False],
+						   ['*11**', 3, True, True]]
 
-		# R = SUM_i (-1)^d_i
-		R.append(d)
+		list_kappa_idx1 = [['**00*', 0, False, False],
+						   ['**01*', 1, False, True],
+						   ['**10*', 2, True, False],
+						   ['**11*', 3, True, True]]
 
-	return R
+		list_kappa_idx2 = [['***00', 0, False, False],
+						   ['***01', 1, False, True],
+						   ['***10', 2, True, False],
+						   ['***11', 3, True, True]]
 
-def fct_sq_solution(w, a):
+		list_kappa_idx3 = [['0***0', 0, False, False],
+						   ['0***1', 1, True, False],
+						   ['1***0', 2, False, True],
+						   ['1***1', 3, True, True]]
+
+		list_kappa_idx4 = [['00***', 0, False, False],
+						   ['01***', 1, False, True],
+						   ['10***', 2, True, False],
+						   ['11***', 3, True, True]]
+
+		list_kappa_idx = [list_kappa_idx0, list_kappa_idx1, 
+						  list_kappa_idx2, list_kappa_idx3, 
+						  list_kappa_idx4]
+
+	if n == 3:
+		list_kappa_idx0 = [['*00', 0, False, False],
+						   ['*01', 1, False, True],
+						   ['*10', 2, True, False],
+						   ['*11', 3, True, True]]
+
+		list_kappa_idx1 = [['0*0', 0, False, False],
+						   ['0*1', 1, True, False],
+						   ['1*0', 2, False, True],
+						   ['1*1', 3, True, True]]
+
+		list_kappa_idx2 = [['00*', 0, False, False],
+						  ['01*', 1, False, True],
+						  ['10*', 2, True, False],
+						  ['11*', 3, True, True]]
+
+		list_kappa_idx = [list_kappa_idx0, list_kappa_idx1, list_kappa_idx2]
+
+	return list_kappa_idx
+
+def find_sq_w0(a, norm):
 	"""
-	Function for the scalar product of the solution guess.
-	
-	Parameter:
-	w -- float
-	a -- Decimal
-	p_i -- integer
-	
-	Return:
-	y -- Decimal
-	"""
-	sq_a = a**2
+	Find the point when for the scalar product of the solution equals 0.
 
-	w = Decimal(w)
-	sq_w = Decimal(w)**2
+	Parameters:
+	a 	 -- Decimal
+	norm -- interger
 
-	alpha = Decimal(8 - a)**2
-	beta = Decimal(2) * a * Decimal(8 - a)
-	gamma = sq_a
-		
-	# y = (8 - a)^2 * w^2  + 2 * a * (8 - a) * w + a^2
-	y = (alpha * sq_w) + (beta * w) + gamma
-
-	return y / Decimal(8**2)
-
-def find_sq_w0(a):
-	"""
-	Find the point when for the scalar product of the solution guess equals 0.
-	
-	Parameter:
-	a -- Decimal
-	
 	Return:
 	w0 -- Decimal
 	"""	
 	w0 = 0
 
-	if (a - Decimal(8)) != 0:
-		# w0 = a / a - 8
-		w0 = a / (a - Decimal(8))
-		
+	if (a - Decimal(norm)) != 0:
+		# w0 = a / a - norm
+		w0 = a / (a - Decimal(norm))
+
 	return w0
+		
+def fct_sq_solution(w, a, p_i, norm):
+	"""
+	Function for the scalar product of the solution guess.
 	
-def fct_sq_nonsol(w, b):
+	Parameters:
+	w 	 -- float
+	a 	 -- Decimal
+	p_i  -- integer
+	norm -- integer
+	
+	Return:
+	y -- Decimal
+	"""
+	w = Decimal(w)
+	sq_w = Decimal(w)**2
+
+	alpha = Decimal(norm - a)**2
+	beta = Decimal(2) * a * Decimal(norm - a)
+	gamma = a**2
+		
+	# y = (norm - a)^2 * w^2  + 2 * a * (norm - a) * w + a^2
+	y = (alpha * sq_w) + (beta * w) + gamma
+		
+	return y / Decimal(norm**2)
+		
+def fct_sq_nonsol(w, b, norm):
 	"""
 	Function for the scalar product of an nonsol guess.
 	
-	Parameter:
-	w -- float
-	b -- Decimal
+	Parameters:
+	w 	 -- float
+	b 	 -- Decimal
+	norm -- integer
 	
 	Return:
 	y -- Decimal
 	"""	
-	sq_b = b**2
-	
 	# y = b^2 * (w - 1)^2
-	y = sq_b * (Decimal(1 - w)**2)
+	y =  (b**2) * (Decimal(1 - w)**2)
 		
-	return y / Decimal(8**2)
-		
-def find_wr(a, b):
+	return y / Decimal(norm**2)
+
+def find_wr(a, b, norm):
 	"""
-	Find the point when for the scalar product of the solution guess equals the scalar product of an nonsol guess.
-	
-	Parameter:
-	a -- Decimal
-	b -- Decimal
-	
+	Find the point when for the scalar product of the solution equals 
+	the scalar product of a nonsol.
+
+	Parameters:
+	a 	 -- Decimal
+	b 	 -- Decimal
+	norm -- integer
+
 	Return:
 	y -- Decimal
 	"""	
+	b = abs(b)
+
 	w1 = 0
 	w2 = 0
 
-	if (Decimal(8) + (b - a)) != 0:
-		# w1 = (|b| - a)/ (8 - (|b| - a))
-		w1 = (b - a) / (Decimal(8) + (b - a))
+	if (Decimal(norm) + (b - a)) != 0:
+
+		# w1 = (|b| - a)/ (norm - (|b| - a))
+		w1 = (b - a) / (Decimal(norm) + (b - a))
 	
-	if (b + a - Decimal(8)) != 0:
-		# w2 = (|b| + a)/ (|b| + a - 8)
-		w2 = (b + a) / (b + a - Decimal(8))
+	if (b + a - Decimal(norm)) != 0:
+
+		# w2 = (|b| + a)/ (|b| + a - norm)
+		w2 = (b + a) / (b + a - Decimal(norm))
 
 	return w1, w2
+
+def append_wr(value, wr):
+	"""
+	Append value to wr if in [0,1]. 
+
+	Parameters:
+	value 	 -- Decimal
+	wr 		 -- list of Decimal
+
+	Return: None
+	"""
+	if (value != None) and (value > 0) and (value < 1):
+		wr.append(value)
 
 def xor_secret_i(K, kappa, i):
 	""" 
 	Compute power consumption at bit i = kappa_i XOR K_i
 	
 	Parameters:
+	K 	  -- string
 	kappa -- string
-	K -- string
-	i -- integer
+	i 	  -- integer
 	
 	Return:
 	p_i -- float
 	"""
-
 	# Transform string into list of booleans
 	kappa = list(kappa)
 	kappa = [bool(int(j)) for j in kappa]
@@ -278,11 +370,53 @@ def xor_secret_i(K, kappa, i):
 
 	return p_i
 
+def test_loop(K, kappa, mu, i, key_i, n, R, S_ref, ax1):
+	"""
+	Control test.
+
+	"""
+	w_list = []
+
+	# Signal power consumption for a key
+	S = signal_1D(mu, i, key_i, n)
+
+	# Parameters for loop
+	scalar_00 = []
+	scalar_01 = []
+	scalar_10 = []
+	scalar_11 = []
+
+	for j in range(1001):
+
+		# Weight of signal part
+		w = j / 1000
+		
+		scalar = []
+			
+		# Global power consumption P = (1 - w) * R + w * S
+		P = [((Decimal(1 - w) * Decimal(r))  + (Decimal(w) * Decimal(s))) for r, s in zip(R, S)]
+
+		# Scalar product <S-ref, P>
+		scalar = np.dot(S_ref, P)
+		scalar_sq = scalar**2
+		
+		w_list.append(w)
+
+		scalar_00.append(scalar_sq[0] / (len(mu)**2))
+		scalar_01.append(scalar_sq[1] / (len(mu)**2))
+		scalar_10.append(scalar_sq[2] / (len(mu)**2))
+		scalar_11.append(scalar_sq[3] / (len(mu)**2))
+
+	ax1.plot(w_list, scalar_00, '--', color='black',  markersize=1, label='00 loop')
+	ax1.plot(w_list, scalar_01, ':', color='black',  markersize=1, label='01 loop')
+	ax1.plot(w_list, scalar_10, '-.', color='black',  markersize=1, label='10 loop')
+	ax1.plot(w_list, scalar_11, '-', color='black',  markersize=1, label='11 loop')
+
 def find_rank(wr, w0):
 	"""
 	Return the list of ranks for the solution kappa.
 	
-	Parameter:
+	Parameters:
 	wr -- list of Decimal
 	w0 -- Decimal
 	
@@ -290,20 +424,16 @@ def find_rank(wr, w0):
 	rank -- list of integer
 	wr -- list of Decimal
 	"""
-
-	# List of ranks
 	rank = []
 
 	# If the list is not empty, retrieve the rank in [0,1]
 	if wr:
-
 		# Count number of rank increment ('wr2') and rank decrement (wr1')
 		counter_1 = sum(1 for w in wr if w > w0)
 		counter_2 = sum(-1 for w in wr if w < w0)
 		num_wr = counter_1 + counter_2
 		
 		rank_init = 1 + num_wr
-		
 		rank.append(rank_init)
 		
 		for w in wr:
@@ -320,204 +450,21 @@ def find_rank(wr, w0):
 		
 	return rank, wr
 
-def sim_1bit(n, i, K, kappa, num_sim):
+def compute_rank_wr(wr, w0):
 	"""
-	Compute simulation scalar products and plot outcomes. 
-	
-	Parameter:
-	n -- integer
-	i -- integer
-	K -- string
-	kappa -- string
-	num_sim -- integer
-	
+	Compute intervals for each ranks in order to plot them.
+
+	Parameters:
+	wr -- list of Decimal
+	w0 -- Decimal
+
 	Return:
-	NaN
+	wr 	 -- list of Decimal
+	rank -- list of integer
 	"""
-	
-	# Signal message mu
-	mu = list(itertools.product([bool(0), bool(1)], repeat=n))
-
-	getcontext().prec = 10
-
-	# Noise power consumption
-	R = noise(n)
-
-	# Secret values for i-th bit
-	key_i = gen_key_i(i, K, kappa)
-	key = gen_key(i)
-
-	# All possible signal power consumption values
-	S_ref = signal_2D(mu, i, key, n)
-
-
-	""" Initial values of scalar product """
-
-	scalar_init = []
-
-	# Global power consumption P_init
-	P_init = [Decimal(r) for r in R]
-
-	# Scalar product <S-ref, P>
-	scalar_init = np.dot(S_ref, P_init)
-
-	# Parameters for functions
-	list_kappa_idx0 = [['*00', 0, False, False],
-					   ['*01', 1, False, True],
-					   ['*10', 2, True, False],
-					   ['*11', 3, True, True]]
-
-	list_kappa_idx1 = [['0*0', 0, False, False],
-					   ['0*1', 1, True, False],
-					   ['1*0', 2, False, True],
-					   ['1*1', 3, True, True]]
-
-	list_kappa_idx2 = [['00*', 0, False, False],
-					  ['01*', 1, False, True],
-					  ['10*', 2, True, False],
-					  ['11*', 3, True, True]]
-
-	list_kappa_idx = [list_kappa_idx0, list_kappa_idx1, list_kappa_idx2]
-
-	solution_idx = [sublist for sublist in list_kappa_idx[i] if (sublist[2] == key_i[(i+1) % n]) and (sublist[3] == key_i[(i+2) % n])]
-	solution_idx = list(itertools.chain.from_iterable(solution_idx))
-
-	nonsol_idx = [sublist for sublist in list_kappa_idx[i] if (sublist[0] != solution_idx[0])]
-	nonsol0_idx = nonsol_idx[0]
-	nonsol1_idx = nonsol_idx[1]
-	nonsol2_idx = nonsol_idx[2]
-
-	# Find initial scalar product values
-	solution_init = scalar_init[solution_idx[1]]
-
-	nonsol0_init = scalar_init[nonsol0_idx[1]]
-	nonsol1_init = scalar_init[nonsol1_idx[1]]
-	nonsol2_init = scalar_init[nonsol2_idx[1]]
-
-	# Determine the sign of initial solution value depending on the activity of the register at bit i
-	p_i = xor_secret_i(K, kappa, i)
-	solution_init = solution_init * p_i
-
-	""" Find the functions according to the kappas and the intersections with solution function """
-
-	# Display a figure with two subplots
-	fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5,5), gridspec_kw={"height_ratios": [2,1]}, sharex=True)
-
-	# Make subplots close to each other and hide x ticks for all but bottom plot.
-	fig.subplots_adjust(hspace=0.2)
-	plt.setp([ax.get_xticklabels() for ax in fig.axes[:-1]], visible=False)
-	
-	# List of all intersections with the solution kappa function
-	wr = []
-
-	# Find the fiber such as f(w0) = 0 
-	w0 = find_sq_w0(solution_init)
-
-	# Abscissas
-	precision = 1000
-	interval = [(w / precision) for w in range(precision)]
-
-	nonsol0_sq = [fct_sq_nonsol(w, nonsol0_init) for w in interval]
-	nonsol1_sq = [fct_sq_nonsol(w, nonsol1_init) for w in interval]
-	nonsol2_sq = [fct_sq_nonsol(w, nonsol2_init) for w in interval]
-	ax1.plot(interval, nonsol0_sq, '-', color='tab:red', markersize=1, label='%s' % nonsol0_idx[0])
-	ax1.plot(interval, nonsol1_sq, '-', color='tab:orange', markersize=1, label='%s' % nonsol1_idx[0])
-	ax1.plot(interval, nonsol2_sq, '-', color='tab:green', markersize=1, label='%s' % nonsol2_idx[0])
-
-	if (solution_init > 0):
-		solution_sq = [fct_sq_solution(w, solution_init) for w in interval]
-		ax1.plot(interval, solution_sq, '-', color='tab:blue',  markersize=1, label='%s' % solution_idx[0])
-	
-	else:
-		interval_dec = [w for w in interval if w <= w0]
-		interval_inc = [w for w in interval if w >= w0]
-		solution_sq_dec = [fct_sq_solution(w, solution_init) for w in interval_dec]
-		solution_sq_inc = [fct_sq_solution(w, solution_init) for w in interval_inc]
-		ax1.plot(interval_dec, solution_sq_dec, '-', color='tab:blue',  markersize=1, label='%s' % solution_idx[0])
-		ax1.plot(interval_inc, solution_sq_inc, '-', color='tab:blue',  markersize=1)
-
-		ax1.axvline(x=w0, linestyle=':', color='tab:blue', label='w_0', markersize=1)
-
-	# intersections between solution function and nonsol functions
-	wr1_nonsol0, wr2_nonsol0 = find_wr(solution_init, nonsol0_init)
-	wr1_nonsol1, wr2_nonsol1 = find_wr(solution_init, nonsol1_init)
-	wr1_nonsol2, wr2_nonsol2 = find_wr(solution_init, nonsol2_init)
-		
-	if (wr1_nonsol0 > 0) and (wr1_nonsol0 < 1):
-		wr.append(wr1_nonsol0)
-		# ax1.axvline(x=wr1_nonsol0, linestyle='--', color='tab:red', markersize=1, label='wr1')
-		
-	if (wr2_nonsol0 > 0) and (wr2_nonsol0 < 1):
-		wr.append(wr2_nonsol0)
-		# ax1.axvline(x=wr2_nonsol0, linestyle=':', color='tab:red', markersize=1, label='wr2')
-		
-	if (wr1_nonsol1 > 0) and (wr1_nonsol1 < 1):
-		wr.append(wr1_nonsol1)
-		# ax1.axvline(x=wr1_nonsol1, linestyle='--', color='tab:orange', markersize=1, label='wr1')
-			
-	if (wr2_nonsol1 > 0) and (wr2_nonsol1 < 1):
-		wr.append(wr2_nonsol1)
-		# ax1.axvline(x=wr2_nonsol1, linestyle=':', color='tab:orange', markersize=1, label='wr2')
-		
-	if (wr1_nonsol2 > 0) and (wr1_nonsol2 < 1):
-		wr.append(wr1_nonsol2)
-		# ax1.axvline(x=wr1_nonsol2, linestyle='--', color='tab:green', markersize=1, label='wr1')
-			
-	if (wr2_nonsol2 > 0) and (wr2_nonsol2 < 1):
-		wr.append(wr2_nonsol2)
-		# ax1.axvline(x=wr2_nonsol2, linestyle=':', color='tab:green', markersize=1, label='wr2')
-
-
-	""" Tests loop
-
-	# Results of scalar products
-	w_list = []
-
-	# Signal power consumption for a key
-	S = signal_1D(mu, i, key_i, n)
-		
-	# Parameters for loop
-	scalar_00 = []
-	scalar_01 = []
-	scalar_10 = []
-	scalar_11 = []
-
-	test = []
-
-	for j in range(101):
-
-		# Weight of signal part
-		w = j / 100
-		
-		scalar = []
-			
-		# Global power consumption P = (1 - w) * R + w * S
-		P = [((Decimal(1 - w) * Decimal(r)) + (Decimal(w) * Decimal(s))) for r, s in zip(R, S)]
-
-		# Scalar product <S-ref, P>^2
-		scalar = np.dot(S_ref, P)
-		scalar_sq = scalar**2
-		
-		w_list.append(w)
-
-		scalar_00.append(Decimal(scalar_sq[0]) / Decimal(8**2))
-		scalar_01.append(Decimal(scalar_sq[1]) / Decimal(8**2))
-		scalar_10.append(Decimal(scalar_sq[2]) / Decimal(8**2))
-		scalar_11.append(Decimal(scalar_sq[3]) / Decimal(8**2))
-
-	ax1.plot(w_list, scalar_00, ':', color='black',  markersize=1, label='00 loop')
-	ax1.plot(w_list, scalar_01, '--', color='black',  markersize=1, label='01 loop')
-	ax1.plot(w_list, scalar_10, '--', color='black',  markersize=1, label='10 loop')
-	ax1.plot(w_list, scalar_11, '-.', color='black',  markersize=1, label='11 loop')
-	"""
-
-	""" Find rank of solution kappa	"""
-
-	# Transform Decimal into float
-	getcontext().prec = 5
+	# Transform Decimal into sorted float
+	getcontext().prec = 8
 	wr = [float(w) for w in wr]
-
-	# Sort by w
 	wr = sorted(wr)
 
 	rank, wr = find_rank(wr, w0)
@@ -533,63 +480,182 @@ def sim_1bit(n, i, K, kappa, num_sim):
 	# Insert edges for plotting
 	wr.insert(0, 0)
 	wr.append(1)
+	return wr, rank
+
+def sim_1bit(n, i, K, kappa, num_sim):
+	"""
+	Compute simulation scalar products and plot outcomes. 
+
+	Parameters:
+	n 		-- integer
+	i 		-- integer
+	K 		-- string
+	kappa 	-- string
+	num_sim -- integer
+
+	Return:
+	NaN
+	"""
+	# Message
+	mu = list(itertools.product([bool(0), bool(1)], repeat=n))
+
+	# Noise power consumption
+	R = noise(mu)
+
+	# Secret values for i-th bit
+	key_i = gen_key_i(i, kappa, K)
+	key = gen_key(i, n)
+
+	# Signal reference vectors
+	S_ref = signal_2D(mu, i, key, n)
+
+	# Global power consumption P_init = R
+	P_init = [Decimal(r) for r in R]
+
+	# Scalar product <S-ref, P>
+	scalar_init = np.dot(S_ref, P_init)
+
+	# ------------------------------------------------------------------------------------------- #
+
+	# List of indexes for scalar product
+	list_kappa_idx = kappa_idx(n)
+
+	# Retrieve idx of kappa's from solution kappa
+	solution_idx = [sublist for sublist in list_kappa_idx[i] 
+				   if (sublist[2] == key_i[(i+1) % n]) and (sublist[3] == key_i[(i+2) % n])]
+	solution_idx = list(itertools.chain.from_iterable(solution_idx))
+
+	nonsol_idx = [sublist for sublist in list_kappa_idx[i] if (sublist[0] != solution_idx[0])]
+
+	# Find initial scalar product values
+	solution_init = scalar_init[solution_idx[1]]
+
+	nonsol_init = []
+	for j in range(3):
+		nonsol_init.append(scalar_init[nonsol_idx[j][1]])
+
+	# Determine the sign of initial solution value depending on the register activity at bit i
+	p_i = xor_secret_i(K, kappa, i)
+	solution_init = solution_init * p_i
+
+	# ------------------------------------------------------------------------------------------- #
+
+	# Display a figure with two subplots
+	fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5,5), 
+								   gridspec_kw={"height_ratios": [2,1]}, sharex=True)
+
+	# Make subplots close to each other and hide x ticks for all but bottom plot
+	fig.subplots_adjust(hspace=0.2)
+	plt.setp([ax.get_xticklabels() for ax in fig.axes[:-1]], visible=False)
+	
+	# List of all intersections with the solution kappa function
+	wr = []
+
+	# Find the fiber such as f(w0) = 0 
+	w0 = find_sq_w0(solution_init, len(mu))
+
+	# Abscissas
+	precision = 1000
+	interval = [(w / precision) for w in range(precision)]
+
+	for j in range(3):
+		nonsol_sq = [fct_sq_nonsol(w, nonsol_init[j], len(mu)) for w in interval]
+		ax1.plot(interval, nonsol_sq, '-', color='tab:red', markersize=1, label='%s' % nonsol_idx[j][0])
+
+	if (solution_init > 0):
+		solution_sq = [fct_sq_solution(w, solution_init, p_i, len(mu)) for w in interval]
+		ax1.plot(interval, solution_sq, '-', color='tab:blue',  markersize=1, label='%s' % solution_idx[0])
+	
+	else:
+		interval_dec = [w for w in interval if w <= w0]
+		interval_inc = [w for w in interval if w >= w0]
+		solution_sq_dec = [fct_sq_solution(w, solution_init, p_i, len(mu)) for w in interval_dec]
+		solution_sq_inc = [fct_sq_solution(w, solution_init, p_i, len(mu)) for w in interval_inc]
+		ax1.plot(interval_dec, solution_sq_dec, '-', color='tab:blue',  markersize=1, label='%s' % solution_idx[0])
+		ax1.plot(interval_inc, solution_sq_inc, '-', color='tab:blue',  markersize=1)
+
+		ax1.axvline(x=w0, linestyle=':', color='tab:blue', markersize=1, label='w_0')
+
+	# Intersections between solution function and nonsol functions
+	for j in range(3):
+		wr1_nonsol, wr2_nonsol = find_wr(solution_init, nonsol_init[j], len(mu))
+		append_wr(wr1_nonsol, wr)
+		append_wr(wr2_nonsol, wr)
+
+	# ------------------------------------------------------------------------------------------- #
+
+	# Test for 1000 w points
+	# test_loop(K, kappa, mu, i, key_i, n, R, S_ref, ax1)
+
+	wr, rank = compute_rank_wr(wr, w0)
 
 	ax2.plot(wr, rank, color='tab:blue')
-
-	ax1.legend(loc='upper left')
-	ax1.set_title(r'One-bit strategy for K_%s=%s & kappa=%s' %(i, K[i], kappa))
-	ax1.set_ylabel('Scalar product <S_ref,P>^2')
-	ax2.set_ylabel('Rank kappa solution')
+	
+	ax1.legend(loc='upper left', ncol=2, fancybox=True, fontsize = 'small')
+	ax1.set_title(r'Single DoM with K_%s=%s & kappa=%s' %(i, K[i], kappa))
+	ax1.set_ylabel('Squared scalar product <S_ref,P>^2')
+	ax2.set_ylabel('Rank solution kappa')
 	ax2.set_xlabel('Weight w')
 	# ax2.invert_yaxis()
-	ax2.set_ylim([5, 0])
-	
+	ax2.set_ylim([4.5, 0])
+
 	fig.tight_layout()
-	# plt.show()
-	plt.savefig('./plot/sim_1bit_sq_K=%s_kappa=%s_i=%s_#%s.png' % (K, kappa, i, num_sim))
-	plt.close(fig)
-	
+	plt.show()
+	# plt.savefig('./plot/sim_1bit_%srow_sq_K=%s_kappa=%s_i=%s_#%s.pdf' % (n, K, kappa, i, num_sim), dpi=300)
+	# plt.savefig('./plot/sim_1bit_%srow_sq_K=%s_kappa=%s_i=%s_#%s.png' % (n, K, kappa, i, num_sim))
+	# plt.close(fig)
+
 def main(unused_command_line_args):
 
-	parser = argparse.ArgumentParser(description='i, K, kappa and num_sim')
+	parser = argparse.ArgumentParser(description='n, i, K, kappa, and num_sim')
 
-	parser.add_argument('i', metavar='i', type=int, default=1, help='studied bit of first chi row in [0, 2]')
-	parser.add_argument('K', metavar='K', type=str, default='000', help='3-length bit value')
-	parser.add_argument('kappa', metavar='kappa', type=str, default='000', help='3-length bit value')
+	parser.add_argument('n', metavar='n', type=int, default=1, help='length of chi row in {3, 5}')
+	parser.add_argument('i', metavar='i', type=int, default=1, help='studied bit of first chi row in [0, n-1]')
+	parser.add_argument('K', metavar='K', type=str, default='000', help='n-length bit value')
+	parser.add_argument('kappa', metavar='kappa', type=str, default='000', help='n-length bit value')
 	parser.add_argument('num_sim', metavar='num_sim', type=int, default=100, help='number of simulations')
 
 	args = parser.parse_args()
 
-	if len(args.K) != 3 or len(args.kappa) != 3 or (args.i < 0) or (args.i > 2):
+	if (args.n != 3) and (args.n != 5):
 		print('\n**ERROR**')
-		print('Required length of K and kappa: 3')
-		print('i is in [0, 2]\n')
+		print('Required length of chi row: 3 or 5 bits')
 
 	else:
-		# Length of signal part
-		n = 3
+		if (args.n == 3) and (len(args.K) != 3 or len(args.kappa) != 3 or (args.i < 0) or (args.i > 2)):
+				print('\n**ERROR**')
+				print('Required length of K and kappa: 3')
+				print('Index studied bit i: [0, 2]\n')
+		elif (args.n == 5) and (len(args.K) != 5 or len(args.kappa) != 5 or (args.i < 0) or (args.i > 4)):
+				print('\n**ERROR**')
+				print('Required length of K and kappa: 5')
+				print('Index studied bit i: [0, 4]\n')
 
-		# Initial i-th bit register state value
-		K = args.K
+		else:
+			# Length of signal part
+			n = args.n
 
-		# Key value after linear layer
-		kappa = args.kappa
+			# Initial i-th bit register state value
+			K = args.K
 
-		# Number of simulations
-		num_sim = args.num_sim
+			# Key value after linear layer
+			kappa = args.kappa
 
-		# i-th bit of register state studied
-		i = args.i
+			# Number of simulations
+			num_sim = args.num_sim
 
-		# Time option
-		start_t = time.perf_counter()
-		
-		for j in range(num_sim):
-			sim_1bit(n, i, K, kappa, j)
+			# i-th bit of register state studied
+			i = args.i
 
-		# Time option
-		end_t = time.perf_counter()
-		print('\ntime', end_t - start_t, '\n')
- 
+			# Time option
+			start_t = time.perf_counter()
+			
+			for j in range(num_sim):
+				sim_1bit(n, i, K, kappa, j)
+
+			# Time option
+			end_t = time.perf_counter()
+			print('\ntime', end_t - start_t, '\n')
+
 if __name__ == '__main__':
 	sys.exit(main(sys.argv))
