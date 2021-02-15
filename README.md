@@ -17,13 +17,15 @@ The scripts take in command line the following parameters:
 In order to plot scalar product function for one simulation, compile one of the script ```sim_*``` with Python.
 
 The said scripts take the following arguments:
-- ```sim_1bit_to_plot_abs.py [-h] n i K kappa and num_sim```  for the DoM strategy with absolute scalar products.
-- ```sim_1bit_to_plot_sq.py [-h] n i K kappa and num_sim```  for the DoM strategy with squared scalar products.
+- for the DoM strategy
+  - ```sim_1bit_to_plot_abs.py [-h] n i K kappa and num_sim```  with absolute scalar products.
+  - ```sim_1bit_to_plot_sq.py [-h] n i K kappa and num_sim```  with squared scalar products.
 
-- ```sim_1x5bits_to_plot_abs.py [-h] K kappa num_sim```  for the cDoM strategy combining absolute scalar products.
-- ```sim_1x5bits_to_plot_sq.py [-h] K kappa num_sim```  for the cDoM strategy combining squared scalar products.
-
-- ```sim_3bits_to_plot.py [-h] K kappa num_sim```  for the three-bit strategy.
+- for the cDoM strategy
+  - ```sim_1x5bits_to_plot_abs.py [-h] K kappa num_sim```  to combine absolute scalar products.
+  - ```sim_1x5bits_to_plot_sq.py [-h] K kappa num_sim``` to combine squared scalar products.
+- for the CPA strategy
+  - ```sim_3bits_to_plot.py [-h] K kappa num_sim```  for the three-bit strategy.
 
 ## Plot success probabilities per rank for multiple simulations
 
