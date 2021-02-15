@@ -53,9 +53,9 @@ def gen_key_i(i, kappa, K):
 	key_(i mod n) = kappa_(i mod n) XOR K_(i mod n)
 
 	Parameters:
-	i 	-- integer in [0,n-1]
-	kappa 	-- string
-	K 	-- string
+	i 	  -- integer in [0,n-1]
+	kappa -- string
+	K 	  -- string
 
 	Return:
 	key -- list of bool
@@ -114,10 +114,10 @@ def signal_1D(mu, i, key_i, n):
 	Generate signal power consumption S values for a secret state key, for all messages mu. 
 
 	Parameters:
-	mu 	-- 2D list of bool, size n x 2^n
-	i 	-- integer in [0,n-1]
-	key_i 	-- list of bool
-	n 	-- integer
+	mu 	  -- 2D list of bool, size n x 2^n
+	i 	  -- integer in [0,n-1]
+	key_i -- list of bool
+	n 	  -- integer
 
 	Return:
 	S -- list of integers, length 2^n
@@ -188,49 +188,49 @@ def kappa_idx(n):
 
 	if n == 5:
 		list_kappa_idx0 = [['*00**', 0, False, False],
-				   ['*01**', 1, False, True],
-				   ['*10**', 2, True, False],
-				   ['*11**', 3, True, True]]
+						   ['*01**', 1, False, True],
+						   ['*10**', 2, True, False],
+						   ['*11**', 3, True, True]]
 
 		list_kappa_idx1 = [['**00*', 0, False, False],
-				   ['**01*', 1, False, True],
-				   ['**10*', 2, True, False],
-				   ['**11*', 3, True, True]]
+						   ['**01*', 1, False, True],
+						   ['**10*', 2, True, False],
+						   ['**11*', 3, True, True]]
 
 		list_kappa_idx2 = [['***00', 0, False, False],
-				   ['***01', 1, False, True],
-				   ['***10', 2, True, False],
-				   ['***11', 3, True, True]]
+						   ['***01', 1, False, True],
+						   ['***10', 2, True, False],
+						   ['***11', 3, True, True]]
 
 		list_kappa_idx3 = [['0***0', 0, False, False],
-				   ['0***1', 1, True, False],
-				   ['1***0', 2, False, True],
-				   ['1***1', 3, True, True]]
+						   ['0***1', 1, True, False],
+						   ['1***0', 2, False, True],
+						   ['1***1', 3, True, True]]
 
 		list_kappa_idx4 = [['00***', 0, False, False],
-				   ['01***', 1, False, True],
-				   ['10***', 2, True, False],
-				   ['11***', 3, True, True]]
+						   ['01***', 1, False, True],
+						   ['10***', 2, True, False],
+						   ['11***', 3, True, True]]
 
 		list_kappa_idx = [list_kappa_idx0, list_kappa_idx1, 
-				  list_kappa_idx2, list_kappa_idx3, 
-				  list_kappa_idx4]
+						  list_kappa_idx2, list_kappa_idx3, 
+						  list_kappa_idx4]
 
 	if n == 3:
 		list_kappa_idx0 = [['*00', 0, False, False],
-				   ['*01', 1, False, True],
-				   ['*10', 2, True, False],
-				   ['*11', 3, True, True]]
+						   ['*01', 1, False, True],
+						   ['*10', 2, True, False],
+						   ['*11', 3, True, True]]
 
 		list_kappa_idx1 = [['0*0', 0, False, False],
-				   ['0*1', 1, True, False],
-				   ['1*0', 2, False, True],
-				   ['1*1', 3, True, True]]
+						   ['0*1', 1, True, False],
+						   ['1*0', 2, False, True],
+						   ['1*1', 3, True, True]]
 
 		list_kappa_idx2 = [['00*', 0, False, False],
-				  ['01*', 1, False, True],
-				  ['10*', 2, True, False],
-				  ['11*', 3, True, True]]
+						  ['01*', 1, False, True],
+						  ['10*', 2, True, False],
+						  ['11*', 3, True, True]]
 
 		list_kappa_idx = [list_kappa_idx0, list_kappa_idx1, list_kappa_idx2]
 
@@ -260,8 +260,8 @@ def fct_abs_solution(w, a, p_i, norm):
 	Function for the scalar product of the solution guess.
 	
 	Parameters:
-	w    -- float
-	a    -- Decimal
+	w 	 -- float
+	a 	 -- Decimal
 	p_i  -- integer
 	norm -- integer
 	
@@ -284,8 +284,8 @@ def fct_abs_nonsol(w, b, norm):
 	Function for the scalar product of an nonsol guess.
 	
 	Parameters:
-	w    -- float
-	b    -- Decimal
+	w 	 -- float
+	b 	 -- Decimal
 	norm -- integer
 	
 	Return:
@@ -304,8 +304,8 @@ def find_wr(a, b, norm):
 	quals the scalar product of a nonsol.
 	
 	Parameters:
-	a    -- Decimal
-	b    -- Decimal
+	a 	 -- Decimal
+	b 	 -- Decimal
 	norm -- integer
 	
 	Return:
@@ -317,10 +317,12 @@ def find_wr(a, b, norm):
 	w2 = 0
 
 	if (Decimal(norm) + (b - a)) != 0:
+
 		# w1 = (|b| - a)/ (norm - (|b| - a))
 		w1 = (b - a) / (Decimal(norm) + (b - a))
 	
 	if (b + a - Decimal(norm)) != 0:
+
 		# w2 = (|b| + a)/ (|b| + a - norm)
 		w2 = (b + a) / (b + a - Decimal(norm))
 
@@ -331,8 +333,8 @@ def append_wr(value, wr):
 	Append value to wr if in [0,1]. 
 
 	Parameters:
-	value -- Decimal
-	wr    -- list of Decimal
+	value 	 -- Decimal
+	wr 		 -- list of Decimal
 
 	Return: None
 	"""
@@ -344,9 +346,9 @@ def xor_secret_i(K, kappa, i):
 	Compute power consumption at bit i = kappa_i XOR K_i
 	
 	Parameters:
-	K     -- string
+	K 	  -- string
 	kappa -- string
-	i     -- integer
+	i 	  -- integer
 	
 	Return:
 	p_i -- float
@@ -484,9 +486,9 @@ def sim_1bit(n, i, K, kappa, num_sim):
 	Compute simulation scalar products and plot outcomes. 
 
 	Parameters:
-	n 	-- integer
-	i 	-- integer
-	K 	-- string
+	n 		-- integer
+	i 		-- integer
+	K 		-- string
 	kappa 	-- string
 	num_sim -- integer
 
