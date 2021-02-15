@@ -4,7 +4,7 @@
 
 __author__      = "Anna Guinet"
 __email__       = "email@annagui.net"
-__version__     = "3.0"
+__version__     = "3.1"
 
 import numpy as np
 import itertools
@@ -186,13 +186,12 @@ def find_idx_scalar(scalar, value):
 	Parameters:
 	scalar -- list, size 2^n x 2^n
 	value  -- float
-	"""
 
+	Return
+	indexes -- list of integer
+	"""
 	# Give sublist index and element index in scalar if element == value
 	indexes = [[sublist_idx, elem_idx] for sublist_idx,sublist in enumerate(scalar) for elem_idx, elem in enumerate(sublist) if elem==value]
-	
-	# Flat previous list
-	#indexes = list(itertools.chain.from_iterable(indexes))
 
 	return indexes
 
@@ -279,6 +278,21 @@ def kappa_K_idx():
 					list_K_kappa_idx4, list_K_kappa_idx5, list_K_kappa_idx6, list_K_kappa_idx7]
 
 	return list_K_kappa
+
+def find_idx(list_K_kappa_idx, list_scalar):
+	"""
+	Link scalar products with indexes for K and kappa values.
+
+	Parameters:
+	list_K_kappa_idx -- list of lists
+	list_scalar 	 -- list of integer
+
+	Return:
+	list_scalar -- list of lists
+	"""
+	list_idx = [sublist_K_kappa for sublist_K in list_K_kappa_idx for sublist_K_kappa in sublist_K for sublist_sc in list_scalar if (sublist_K_kappa[2] == sublist_sc[0] and (sublist_K_kappa[3] == sublist_sc[1]))]
+	
+	return list_idx
 
 def find_init(num_deg, num_ndeg, scalar_init, list_idx):
 	"""
@@ -397,7 +411,7 @@ def find_wr_common(value, num_deg, num_ndeg, solution_init, list_idx, list_init)
 
 	return list_wr
 
-def test_loop(n, mu, K, kappa, ax1):
+def test_loop(n, mu, K, kappa, ax1, R, S_ref):
 	"""
 	Control test.
 	"""
@@ -457,84 +471,84 @@ def test_loop(n, mu, K, kappa, ax1):
 			
 		# Global power consumption P = (1 - w) * R + w * S
 		getcontext().prec = 8
-		P = [float((Decimal(1 - w) * Decimal(r)) + (Decimal(w) * Decimal(s))) for r, s in zip(R, S)]
+		P = [(Decimal(1 - w) * Decimal(r)) + (Decimal(w) * Decimal(s)) for r, s in zip(R, S)]
 
 		# Scalar product <S-ref, P>
 		scalar = np.dot(S_ref, P)
 
 		w_list.append(w)
 
-		scalar_K_000_kappa_000.append(scalar[0][0])
-		scalar_K_000_kappa_001.append(scalar[0][1])
-		scalar_K_000_kappa_010.append(scalar[0][2])
-		scalar_K_000_kappa_011.append(scalar[0][3])
-		scalar_K_000_kappa_100.append(scalar[0][4])
-		scalar_K_000_kappa_101.append(scalar[0][5])
-		scalar_K_000_kappa_110.append(scalar[0][6])
-		scalar_K_000_kappa_111.append(scalar[0][7])
+		scalar_K_000_kappa_000.append(scalar[0][0] / Decimal(24))
+		scalar_K_000_kappa_001.append(scalar[0][1] / Decimal(24))
+		scalar_K_000_kappa_010.append(scalar[0][2] / Decimal(24))
+		scalar_K_000_kappa_011.append(scalar[0][3] / Decimal(24))
+		scalar_K_000_kappa_100.append(scalar[0][4] / Decimal(24))
+		scalar_K_000_kappa_101.append(scalar[0][5] / Decimal(24))
+		scalar_K_000_kappa_110.append(scalar[0][6] / Decimal(24))
+		scalar_K_000_kappa_111.append(scalar[0][7] / Decimal(24))
 
-		scalar_K_001_kappa_000.append(scalar[1][0])
-		scalar_K_001_kappa_001.append(scalar[1][1])
-		scalar_K_001_kappa_010.append(scalar[1][2])
-		scalar_K_001_kappa_011.append(scalar[1][3])
-		scalar_K_001_kappa_100.append(scalar[1][4])
-		scalar_K_001_kappa_101.append(scalar[1][5])
-		scalar_K_001_kappa_110.append(scalar[1][6])
-		scalar_K_001_kappa_111.append(scalar[1][7])
+		scalar_K_001_kappa_000.append(scalar[1][0] / Decimal(24))
+		scalar_K_001_kappa_001.append(scalar[1][1] / Decimal(24))
+		scalar_K_001_kappa_010.append(scalar[1][2] / Decimal(24))
+		scalar_K_001_kappa_011.append(scalar[1][3] / Decimal(24))
+		scalar_K_001_kappa_100.append(scalar[1][4] / Decimal(24))
+		scalar_K_001_kappa_101.append(scalar[1][5] / Decimal(24))
+		scalar_K_001_kappa_110.append(scalar[1][6] / Decimal(24))
+		scalar_K_001_kappa_111.append(scalar[1][7] / Decimal(24))
 
-		scalar_K_010_kappa_000.append(scalar[2][0])
-		scalar_K_010_kappa_001.append(scalar[2][1])
-		scalar_K_010_kappa_010.append(scalar[2][2])
-		scalar_K_010_kappa_011.append(scalar[2][3])
-		scalar_K_010_kappa_100.append(scalar[2][4])
-		scalar_K_010_kappa_101.append(scalar[2][5])
-		scalar_K_010_kappa_110.append(scalar[2][6])
-		scalar_K_010_kappa_111.append(scalar[2][7])
+		scalar_K_010_kappa_000.append(scalar[2][0] / Decimal(24))
+		scalar_K_010_kappa_001.append(scalar[2][1] / Decimal(24))
+		scalar_K_010_kappa_010.append(scalar[2][2] / Decimal(24))
+		scalar_K_010_kappa_011.append(scalar[2][3] / Decimal(24))
+		scalar_K_010_kappa_100.append(scalar[2][4] / Decimal(24)) 
+		scalar_K_010_kappa_101.append(scalar[2][5] / Decimal(24))
+		scalar_K_010_kappa_110.append(scalar[2][6] / Decimal(24))
+		scalar_K_010_kappa_111.append(scalar[2][7] / Decimal(24))
 
-		scalar_K_011_kappa_000.append(scalar[3][0])
-		scalar_K_011_kappa_001.append(scalar[3][1])
-		scalar_K_011_kappa_010.append(scalar[3][2])
-		scalar_K_011_kappa_011.append(scalar[3][3])
-		scalar_K_011_kappa_100.append(scalar[3][4])
-		scalar_K_011_kappa_101.append(scalar[3][5])
-		scalar_K_011_kappa_110.append(scalar[3][6])
-		scalar_K_011_kappa_111.append(scalar[3][7])
+		scalar_K_011_kappa_000.append(scalar[3][0] / Decimal(24))
+		scalar_K_011_kappa_001.append(scalar[3][1] / Decimal(24))
+		scalar_K_011_kappa_010.append(scalar[3][2] / Decimal(24))
+		scalar_K_011_kappa_011.append(scalar[3][3] / Decimal(24))
+		scalar_K_011_kappa_100.append(scalar[3][4] / Decimal(24))
+		scalar_K_011_kappa_101.append(scalar[3][5] / Decimal(24))
+		scalar_K_011_kappa_110.append(scalar[3][6] / Decimal(24))
+		scalar_K_011_kappa_111.append(scalar[3][7] / Decimal(24))
 
-		scalar_K_100_kappa_000.append(scalar[4][0])
-		scalar_K_100_kappa_001.append(scalar[4][1])
-		scalar_K_100_kappa_010.append(scalar[4][2])
-		scalar_K_100_kappa_011.append(scalar[4][3])
-		scalar_K_100_kappa_100.append(scalar[4][4])
-		scalar_K_100_kappa_101.append(scalar[4][5])
-		scalar_K_100_kappa_110.append(scalar[0][6])
-		scalar_K_100_kappa_111.append(scalar[4][7])
+		scalar_K_100_kappa_000.append(scalar[4][0] / Decimal(24))
+		scalar_K_100_kappa_001.append(scalar[4][1] / Decimal(24))
+		scalar_K_100_kappa_010.append(scalar[4][2] / Decimal(24))
+		scalar_K_100_kappa_011.append(scalar[4][3] / Decimal(24))
+		scalar_K_100_kappa_100.append(scalar[4][4] / Decimal(24))
+		scalar_K_100_kappa_101.append(scalar[4][5] / Decimal(24))
+		scalar_K_100_kappa_110.append(scalar[0][6] / Decimal(24))
+		scalar_K_100_kappa_111.append(scalar[4][7] / Decimal(24))
 
-		scalar_K_101_kappa_000.append(scalar[5][0])
-		scalar_K_101_kappa_001.append(scalar[5][1])
-		scalar_K_101_kappa_010.append(scalar[5][2])
-		scalar_K_101_kappa_011.append(scalar[5][3])
-		scalar_K_101_kappa_100.append(scalar[5][4])
-		scalar_K_101_kappa_101.append(scalar[5][5])
-		scalar_K_101_kappa_110.append(scalar[5][6])
-		scalar_K_101_kappa_111.append(scalar[5][7])
+		scalar_K_101_kappa_000.append(scalar[5][0] / Decimal(24))
+		scalar_K_101_kappa_001.append(scalar[5][1] / Decimal(24))
+		scalar_K_101_kappa_010.append(scalar[5][2] / Decimal(24))
+		scalar_K_101_kappa_011.append(scalar[5][3] / Decimal(24))
+		scalar_K_101_kappa_100.append(scalar[5][4] / Decimal(24))
+		scalar_K_101_kappa_101.append(scalar[5][5] / Decimal(24))
+		scalar_K_101_kappa_110.append(scalar[5][6] / Decimal(24))
+		scalar_K_101_kappa_111.append(scalar[5][7] / Decimal(24))
 
-		scalar_K_110_kappa_000.append(scalar[6][0])
-		scalar_K_110_kappa_001.append(scalar[6][1])
-		scalar_K_110_kappa_010.append(scalar[6][2])
-		scalar_K_110_kappa_011.append(scalar[6][3])
-		scalar_K_110_kappa_100.append(scalar[6][4])
-		scalar_K_110_kappa_101.append(scalar[6][5])
-		scalar_K_110_kappa_110.append(scalar[6][6])
-		scalar_K_110_kappa_111.append(scalar[6][7])
+		scalar_K_110_kappa_000.append(scalar[6][0] / Decimal(24))
+		scalar_K_110_kappa_001.append(scalar[6][1] / Decimal(24))
+		scalar_K_110_kappa_010.append(scalar[6][2] / Decimal(24))
+		scalar_K_110_kappa_011.append(scalar[6][3] / Decimal(24))
+		scalar_K_110_kappa_100.append(scalar[6][4] / Decimal(24))
+		scalar_K_110_kappa_101.append(scalar[6][5] / Decimal(24))
+		scalar_K_110_kappa_110.append(scalar[6][6] / Decimal(24))
+		scalar_K_110_kappa_111.append(scalar[6][7] / Decimal(24))
 
-		scalar_K_111_kappa_000.append(scalar[7][0])
-		scalar_K_111_kappa_001.append(scalar[7][1])
-		scalar_K_111_kappa_010.append(scalar[7][2])
-		scalar_K_111_kappa_011.append(scalar[7][3])
-		scalar_K_111_kappa_100.append(scalar[7][4])
-		scalar_K_111_kappa_101.append(scalar[7][5])
-		scalar_K_111_kappa_110.append(scalar[7][6])
-		scalar_K_111_kappa_111.append(scalar[7][7])
+		scalar_K_111_kappa_000.append(scalar[7][0] / Decimal(24))
+		scalar_K_111_kappa_001.append(scalar[7][1] / Decimal(24))
+		scalar_K_111_kappa_010.append(scalar[7][2] / Decimal(24))
+		scalar_K_111_kappa_011.append(scalar[7][3] / Decimal(24))
+		scalar_K_111_kappa_100.append(scalar[7][4] / Decimal(24))
+		scalar_K_111_kappa_101.append(scalar[7][5] / Decimal(24))
+		scalar_K_111_kappa_110.append(scalar[7][6] / Decimal(24))
+		scalar_K_111_kappa_111.append(scalar[7][7] / Decimal(24))
 	
 	# ax1.plot(w_list, scalar_K_000_kappa_000, '-', color='tab:blue',  markersize=1, label='K=000 kappa=000')
 	# ax1.plot(w_list, scalar_K_000_kappa_001, '-', color='tab:orange',  markersize=1, label='K=000 kappa=001')
@@ -685,14 +699,12 @@ def sim_3bits(n, K, kappa, num_sim):
 	# All possible signal power consumption values
 	S_ref = signal_3D(mu, n)
 
-	""" Find correlation with solution with final scalar product values """
+	# ------------------------------------------------------------------------------------------- #
 
 	# Scalar product for full signal <S-ref, P = S>
 	S = signal_1D(mu, K, kappa, n)
 	P_fin = S
 	scalar_fin = np.dot(S_ref, P_fin)
-
-	# ------------------------------------------------------------------------------------------- #
 
 	# Find the indexes of the elements equals to a specific scalar product value
 	scalar_fin_pos_24 = find_idx_scalar(scalar_fin, 24)
@@ -706,33 +718,18 @@ def sim_3bits(n, K, kappa, num_sim):
 	# Match the vectors with the secret values
 	list_K_kappa_idx = kappa_K_idx()
 
-	# Find indexes of all solution functions
-	solution_idx = [sublist_K_kappa for sublist_K in list_K_kappa_idx for sublist_K_kappa in sublist_K for sublist_sc in scalar_fin_pos_24 if (sublist_K_kappa[2] == sublist_sc[0] and (sublist_K_kappa[3] == sublist_sc[1]))]
-
-	# Find indexes of all common solutions for +16
-	common_pos_16_idx = [sublist_K_kappa for sublist_K in list_K_kappa_idx for sublist_K_kappa in sublist_K for sublist_sc in scalar_fin_pos_16 if (sublist_K_kappa[2] == sublist_sc[0] and (sublist_K_kappa[3] == sublist_sc[1]))]
-	
-	# Find indexes of all common solutions for +8
-	common_pos_8_idx = [sublist_K_kappa for sublist_K in list_K_kappa_idx for sublist_K_kappa in sublist_K for sublist_sc in scalar_fin_pos_8 if (sublist_K_kappa[2] == sublist_sc[0] and (sublist_K_kappa[3] == sublist_sc[1]))]
-	
-	# Find indexes of all uncommon solutions
-	uncommon_0_idx = [sublist_K_kappa for sublist_K in list_K_kappa_idx for sublist_K_kappa in sublist_K for sublist_sc in scalar_fin_0 if (sublist_K_kappa[2] == sublist_sc[0] and (sublist_K_kappa[3] == sublist_sc[1]))]
-	
-	# Find indexes of all common solutions for -8
-	common_neg_8_idx = [sublist_K_kappa for sublist_K in list_K_kappa_idx for sublist_K_kappa in sublist_K for sublist_sc in scalar_fin_neg_8 if (sublist_K_kappa[2] == sublist_sc[0] and (sublist_K_kappa[3] == sublist_sc[1]))]
-	
-	# Find indexes of all common solutions for -16
-	common_neg_16_idx = [sublist_K_kappa for sublist_K in list_K_kappa_idx for sublist_K_kappa in sublist_K for sublist_sc in scalar_fin_neg_16 if (sublist_K_kappa[2] == sublist_sc[0] and (sublist_K_kappa[3] == sublist_sc[1]))]
-	
-	# Find indexes of all common solutions for -24
-	common_neg_24_idx = [sublist_K_kappa for sublist_K in list_K_kappa_idx for sublist_K_kappa in sublist_K for sublist_sc in scalar_fin_neg_24 if (sublist_K_kappa[2] == sublist_sc[0] and (sublist_K_kappa[3] == sublist_sc[1]))]
+	solution_idx 	  = find_idx(list_K_kappa_idx, scalar_fin_pos_24)
+	common_pos_16_idx = find_idx(list_K_kappa_idx, scalar_fin_pos_16)
+	common_pos_8_idx  = find_idx(list_K_kappa_idx, scalar_fin_pos_8)
+	uncommon_0_idx 	  = find_idx(list_K_kappa_idx, scalar_fin_0)
+	common_neg_8_idx  = find_idx(list_K_kappa_idx, scalar_fin_neg_8)
+	common_neg_16_idx = find_idx(list_K_kappa_idx, scalar_fin_neg_16)
+	common_neg_24_idx = find_idx(list_K_kappa_idx, scalar_fin_neg_24)
 
 	# ------------------------------------------------------------------------------------------- #
 
-	# Global power consumption P_init
+	# Initial scalar product <S-ref, P = R>
 	P_init = [Decimal(r) for r in R]
-
-	# Initial scalar product <S-ref, P>
 	scalar_init = np.dot(S_ref, P_init)
 
 	# Find initial scalar products according to idx
@@ -747,27 +744,18 @@ def sim_3bits(n, K, kappa, num_sim):
 	# ------------------------------------------------------------------------------------------- #
 
 	# Display a figure with two subplots
-	# fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5,5), gridspec_kw={"height_ratios": [1.5,1]})
 	fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8,5),  gridspec_kw={"width_ratios": [2,1]})
 
-	# Make subplots close to each other and hide x ticks for all but bottom plot.
-	# fig.subplots_adjust(hspace=0.1)
-	# plt.setp([ax.get_xticklabels() for ax in fig.axes[:-1]], visible=False)
-	
-	# List of all intersections with the solution kappa function
-	wr = []
-
+	# Plot scalar product functions
 	interval = [0, 1]
 
-	# Plot scalar product functions
 	plot_fct(24, 2, 1, interval, ax1, 'red', solution_idx, solution_init)
 	plot_fct(16, 6, 4, interval, ax1, 'purple', common_pos_16_idx, common_pos_16_init)
 	plot_fct(8, 18, 19, interval, ax1, 'orange', common_pos_8_idx, common_pos_8_init)
 	plot_fct(0, 12, 16, interval, ax1, 'blue', uncommon_0_idx, uncommon_0_init)
-	plot_fct(8, 18, 19, interval, ax1, 'green', common_neg_8_idx, common_neg_8_init)
+	plot_fct(-8, 18, 19, interval, ax1, 'green', common_neg_8_idx, common_neg_8_init)
 	plot_fct(-16, 6, 4, interval, ax1, 'brown', common_neg_16_idx, common_neg_16_init)
 	plot_fct(-24, 2, 1, interval, ax1, 'pink', common_neg_24_idx, common_neg_24_init)
-
 
 	# Find intersection values
 	wr_common_pos_16 = find_wr_common(16, 6, 4, solution_init, common_pos_16_idx, common_pos_16_init)
@@ -794,16 +782,11 @@ def sim_3bits(n, K, kappa, num_sim):
 
 	# ------------------------------------------------------------------------------------------- #
 
-	wr = wr_common_pos_16
-	wr += wr_common_pos_8
-	wr += wr_uncommon_0
-	wr += wr_common_neg_8
-	wr += wr_common_neg_16
-	wr += wr_common_neg_24
+	wr = wr_common_pos_16 + wr_common_pos_8 + wr_uncommon_0 +  wr_common_neg_8 +  wr_common_neg_16 +  wr_common_neg_24
 
 	rank, wr = compute_rank_wr(wr)
 
-	test_loop()
+	test_loop(n, mu, K, kappa, ax1, R, S_ref)
 
 	# ax1.legend(loc='upper right')
 	ax1.set_title(r'CPA strategy for K=%s & kappa=%s' %(K, kappa))
