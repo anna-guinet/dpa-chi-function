@@ -20,8 +20,8 @@ The said scripts take the following arguments:
 - ```sim_1bit_to_plot_abs.py [-h] n i K kappa and num_sim```  for the DoM strategy with absolute scalar products.
 - ```sim_1bit_to_plot_sq.py [-h] n i K kappa and num_sim```  for the DoM strategy with squared scalar products.
 
-- ```sim_1x3bits_to_plot_abs.py [-h] K kappa num_sim```  for the strategy combining three absolute scalar products.
-- ```sim_1x3bits_to_plot_sq.py [-h] K kappa num_sim```  for the strategy combining three squared scalar products.
+- ```sim_1x5bits_to_plot_abs.py [-h] K kappa num_sim```  for the cDoM strategy combining absolute scalar products.
+- ```sim_1x5bits_to_plot_sq.py [-h] K kappa num_sim```  for the cDoM strategy combining squared scalar products.
 
 - ```sim_3bits_to_plot.py [-h] K kappa num_sim```  for the three-bit strategy.
 
