@@ -25,7 +25,7 @@ The said scripts take the following arguments:
   - ```sim_1x5bits_to_plot_abs.py [-h] K kappa num_sim```  to combine absolute scalar products.
   - ```sim_1x5bits_to_plot_sq.py [-h] K kappa num_sim``` to combine squared scalar products.
 - for the CPA strategy
-  - ```sim_3bits_to_plot.py [-h] K kappa num_sim```  for the three-bit strategy.
+  - ```sim_3bits_to_plot.py [-h] K kappa num_sim```.
 
 ## Plot success probabilities per rank for multiple simulations
 
