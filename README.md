@@ -14,9 +14,9 @@ The scripts take in command line the following parameters:
 
 ## Plot scalar product functions for one simulation
 
-In order to plot scalar product function for one simulation, compile one of the script ```sim_*``` with Python.
+In order to plot scalar product functions for one simulation, compile one of the script ```sim_*``` with Python.
 
-The said scripts take the following arguments:
+The one-simulation scripts take the following arguments:
 - for the DoM strategy
   - ```sim_1bit_to_plot_abs.py [-h] n i K kappa and num_sim```  with absolute scalar products.
   - ```sim_1bit_to_plot_sq.py [-h] n i K kappa and num_sim```  with squared scalar products.
