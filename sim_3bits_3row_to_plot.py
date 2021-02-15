@@ -550,17 +550,17 @@ def test_loop(n, mu, K, kappa, ax1, R, S_ref):
 		scalar_K_111_kappa_110.append(scalar[7][6] / Decimal(24))
 		scalar_K_111_kappa_111.append(scalar[7][7] / Decimal(24))
 	
-	# ax1.plot(w_list, scalar_K_000_kappa_000, '-', color='tab:blue',  markersize=1, label='K=000 kappa=000')
+	# ax1.plot(w_list, scalar_K_000_kappa_000, '-', color='black',  markersize=1, label='K=000 kappa=000')
 	# ax1.plot(w_list, scalar_K_000_kappa_001, '-', color='tab:orange',  markersize=1, label='K=000 kappa=001')
 	# ax1.plot(w_list, scalar_K_000_kappa_010, '-', color='tab:green',  markersize=1, label='K=000 kappa=010')
 	# ax1.plot(w_list, scalar_K_000_kappa_011, '-', color='tab:red',  markersize=1, label='K=000 kappa=011')
 	# ax1.plot(w_list, scalar_K_000_kappa_100, '-', color='tab:pink',  markersize=1, label='K=000 kappa=100')
 	# ax1.plot(w_list, scalar_K_000_kappa_101, '-', color='tab:brown',  markersize=1, label='K=000 kappa=101')
 	# ax1.plot(w_list, scalar_K_000_kappa_110, '-', color='tab:grey',  markersize=1, label='K=000 kappa=110')
-	# ax1.plot(w_list, scalar_K_000_kappa_111, '-', color='tab:purple',  markersize=1, label='K=000 kappa=111')
+	ax1.plot(w_list, scalar_K_000_kappa_111, ':', color='black',  markersize=1, label='K=000 kappa=111')
 
 	# ax1.plot(w_list, scalar_K_001_kappa_000, '-', color='tab:blue',  markersize=1, label='K=001 kappa=000')
-	ax1.plot(w_list, scalar_K_001_kappa_001, ':', color='black',  markersize=1, label='K=001 kappa=001')
+	# ax1.plot(w_list, scalar_K_001_kappa_001, ':', color='black',  markersize=1, label='K=001 kappa=001')
 	# ax1.plot(w_list, scalar_K_001_kappa_010, '-', color='tab:green',  markersize=1, label='K=001 kappa=010')
 	# ax1.plot(w_list, scalar_K_001_kappa_011, '-', color='tab:red',  markersize=1, label='K=001 kappa=011')
 	# ax1.plot(w_list, scalar_K_001_kappa_100, '-', color='tab:pink',  markersize=1, label='K=001 kappa=100')
@@ -580,7 +580,7 @@ def test_loop(n, mu, K, kappa, ax1, R, S_ref):
 	# ax1.plot(w_list, scalar_K_011_kappa_000, '-', color='tab:blue',  markersize=1, label='K=011 kappa=000')
 	# ax1.plot(w_list, scalar_K_011_kappa_001, '-', color='tab:orange',  markersize=1, label='K=011 kappa=001')
 	# ax1.plot(w_list, scalar_K_011_kappa_010, '-', color='tab:green',  markersize=1, label='K=011 kappa=010')
-	ax1.plot(w_list, scalar_K_011_kappa_011, '-.', color='black',  markersize=1, label='K=011 kappa=011')
+	# ax1.plot(w_list, scalar_K_011_kappa_011, '-.', color='black',  markersize=1, label='K=011 kappa=011')
 	# ax1.plot(w_list, scalar_K_011_kappa_100, '-', color='tab:pink',  markersize=1, label='K=011 kappa=100')
 	# ax1.plot(w_list, scalar_K_011_kappa_101, '-', color='tab:brown',  markersize=1, label='K=011 kappa=101')
 	# ax1.plot(w_list, scalar_K_011_kappa_110, '-', color='tab:grey',  markersize=1, label='K=011 kappa=110')
@@ -605,7 +605,7 @@ def test_loop(n, mu, K, kappa, ax1, R, S_ref):
 	# ax1.plot(w_list, scalar_K_101_kappa_111, '-', color='tab:purple',  markersize=1, label='K=101 kappa=111')
 
 	# ax1.plot(w_list, scalar_K_110_kappa_000, '-', color='tab:blue',  markersize=1, label='K=110 kappa=000')
-	ax1.plot(w_list, scalar_K_110_kappa_001, '--', color='black',  markersize=1, label='K=110 kappa=001')
+	# ax1.plot(w_list, scalar_K_110_kappa_001, '--', color='black',  markersize=1, label='K=110 kappa=001')
 	# ax1.plot(w_list, scalar_K_110_kappa_010, '-', color='tab:green',  markersize=1, label='K=110 kappa=010')
 	# ax1.plot(w_list, scalar_K_110_kappa_011, '-', color='tab:red',  markersize=1, label='K=110 kappa=011')
 	# ax1.plot(w_list, scalar_K_110_kappa_100, '-', color='tab:pink',  markersize=1, label='K=110 kappa=100')
@@ -613,14 +613,14 @@ def test_loop(n, mu, K, kappa, ax1, R, S_ref):
 	# ax1.plot(w_list, scalar_K_110_kappa_110, '--', color='black',  markersize=1, label='K=110 kappa=110')
 	# ax1.plot(w_list, scalar_K_110_kappa_111, '-', color='tab:purple',  markersize=1, label='K=110 kappa=111')
 
-	# ax1.plot(w_list, scalar_K_111_kappa_000, '-', color='tab:blue',  markersize=1, label='K=111 kappa=000')
+	# ax1.plot(w_list, scalar_K_111_kappa_000, '-.', color='black',  markersize=1, label='K=111 kappa=000')
 	# ax1.plot(w_list, scalar_K_111_kappa_001, '-', color='tab:orange',  markersize=1, label='K=111 kappa=001')
 	# ax1.plot(w_list, scalar_K_111_kappa_010, '-', color='tab:green',  markersize=1, label='K=111 kappa=010')
 	# ax1.plot(w_list, scalar_K_111_kappa_011, '-', color='tab:red',  markersize=1, label='K=111 kappa=011')
 	# ax1.plot(w_list, scalar_K_111_kappa_100, '-', color='tab:pink',  markersize=1, label='K=111 kappa=100')
 	# ax1.plot(w_list, scalar_K_111_kappa_101, '-', color='tab:brown',  markersize=1, label='K=111 kappa=101')
 	# ax1.plot(w_list, scalar_K_111_kappa_110, '-', color='tab:grey',  markersize=1, label='K=111 kappa=110')
-	# ax1.plot(w_list, scalar_K_111_kappa_111, '-', color='tab:purple',  markersize=1, label='K=111 kappa=111')
+	# ax1.plot(w_list, scalar_K_111_kappa_111, '-.', color='black',  markersize=1, label='K=111 kappa=111')
 
 def find_rank(wr):
 	"""
