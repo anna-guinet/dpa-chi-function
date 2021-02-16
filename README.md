@@ -14,7 +14,7 @@ The scripts take in command line the following parameters:
 
 ## Plot scalar product functions for one simulation
 
-In order to plot scalar product functions for one simulation, compile one of the script ```sim_*``` with Python.
+In order to plot scalar product functions for one simulation, compile one of the scripts ```sim_*_to_plot_*``` with Python3.
 
 The one-simulation scripts take the following arguments:
 - for the DoM strategy
@@ -30,9 +30,9 @@ The one-simulation scripts take the following arguments:
 
 ## Plot success probabilities per rank for multiple simulations
 
-### Generate data
+In order to plot success probabilities for all the rank with a given number of simulations, compile first one of the scripts ```num_sim_*_pr_success_to_csv_*``` with Python3 to generate data, and save them in a CSV file. Secondly, plot the results with the corresponding ```num_sim_*_pr_success_csv_to_plot``` script.
 
-In order to plot success probabilities for all the rank with a given number of simulations, compile one of the script ```num_sim_*_pr_success_*``` with Python.
+### Generate data
 
 First, the following scripts save success probabilities per rank in a CSV file:
 - for the DoM strategy
