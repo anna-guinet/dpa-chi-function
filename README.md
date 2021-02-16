@@ -45,10 +45,14 @@ First, the following scripts save success probabilities per rank in a CSV file:
 	- ```num_sim_3bits_pr_success_to_csv.py [-h] K kappa num_sim```  for a three-bit chi row.
 
 Then, run the following scripts to plot the results from the CSV file:
-- ```num_sim_1bit_pr_success_csv_to_plot.py [-h] mode n i K kappa num_sim```  for the DoM strategy with absolute (mode: 1) or squared (mode: 2) scalar products, or both (mode: 3).
-- ```num_sim_1x3bits_pr_success_csv_to_plot.py [-h] mode K kappa num_sim```  for the cDoM strategy with absolute (mode: 1) or squared (mode: 2) scalar products, or both (mode: 3) options.
+- for the DoM strategy
+	- ```num_sim_1bit_pr_success_csv_to_plot.py [-h] mode n i K kappa num_sim```  for the DoM strategy with absolute (mode: 1) or squared (mode: 2) scalar products, or both (mode: 3) option.
 
-- ```num_sim_3bits_pr_success_csv_to_plot.py [-h] K kappa num_sim ``` for a three-bit chi row.
+- for the cDoM strategy
+	- ```num_sim_1x3bits_pr_success_csv_to_plot.py [-h] mode K kappa num_sim```  for the cDoM strategy with absolute (mode: 1) or squared (mode: 2) scalar products, or both (mode: 3) options.
+
+- for the CPA strategy
+	- ```num_sim_3bits_pr_success_csv_to_plot.py [-h] K kappa num_sim ``` for a three-bit chi row.
 
 
 # Licence
