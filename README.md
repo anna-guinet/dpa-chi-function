@@ -30,6 +30,8 @@ The one-simulation scripts take the following arguments:
 
 ## Plot success probabilities per rank for multiple simulations
 
+### Generate data
+
 In order to plot success probabilities for all the rank with a given number of simulations, compile one of the script ```num_sim_*_pr_success_*``` with Python.
 
 First, the following scripts save success probabilities per rank in a CSV file:
@@ -44,7 +46,9 @@ First, the following scripts save success probabilities per rank in a CSV file:
 - for the CPA strategy
 	- ```num_sim_3bits_pr_success_to_csv.py [-h] K kappa num_sim```  for a three-bit chi row.
 
-Then, run the following scripts to plot the results from the CSV file:
+### Plot data
+
+Next, run the following scripts to plot the results from the CSV file:
 - for the DoM strategy
 	- ```num_sim_1bit_pr_success_csv_to_plot.py [-h] mode n i K kappa num_sim```  for the DoM strategy with absolute (mode: 1) or squared (mode: 2) scalar products, or both (mode: 3) option.
 
