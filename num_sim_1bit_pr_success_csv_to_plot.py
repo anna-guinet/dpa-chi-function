@@ -1,277 +1,237 @@
-#!/usr/bin/env python
-
-"""SUCCESS PROBA DPA 1-BIT CHI ROW & 1-BIT K"""
+"""LIBRARY FOR DPA ON KECCAK n-BIT CHI ROW & 1-BIT K"""
 
 __author__      = "Anna Guinet"
-__email__       = "email@annagui.net"
-__version__ 	= "2.0"
+__email__		= "email@annagui.net"
+__version__ 	= "2.1"
 
 import pandas as pd
 import matplotlib.pylab as plt
+import math
+
 import argparse
 import time
 import sys
 
-def load_csv(i, K, kappa, num_sim, rank, type_sp):
+def load_csv(n, i, K, kappa, num_sim, rank, type_sp):
 	"""
-	Load data from CSV file for a given (K, kappa) tuple for num_sim simulations
-	for either 1 absolute or squared scalar product. 
+	Load data from CSV file for a given (K, kappa) tuple for num_sim simulations 
+	for a combinaison of n experiments on 1 bit of the register 
+	for either absolute scalar product or squared one. 
 
 	Parameters:
-	K -- string
-	kappa - string
+	n 		-- integer
+	i 		-- integer
+	K 		-- string
+	kappa  	-- string
 	num_sim -- integer
-	rank -- integer
+	rank 	-- integer
 	type_sp -- string
 
 	Return:
 	df -- DataFrame
 	"""
-
-	file_name =  r'./csv/1bit_%s_num-sim=%s_K=%s_kappa=%s_i=%s_rank%s.csv' % (type_sp, num_sim, K, kappa, i, rank)
+	file_name =  r'./csv/1bit_%srow_%s_num-sim=%s_K=%s_kappa=%s_i=%s_rank%s.csv' % (n, type_sp, num_sim, K, kappa, i, rank)
 
 	# Load from CSV file
 	df = pd.read_csv(file_name)
 
 	return df
 
-def csv_to_plot_1bit_one_type(i, K, kappa, num_sim, type_sp):
+def csv_to_plot_1bit_one_type(n, i, K, kappa, num_sim, type_sp):
 	"""
-	Plot probability of success for a given (K, kappa) tuple for num_sim simulations
-	for either 1 absolute or squared scalar product
-	from CSV files. 
+	Plot guessing entropy for a given (K, kappa) tuple for num_sim simulations for 
+	a combinaison of n experiments on 1 bit of the register 
+	for either absolute scalar product or squared one from CSV files. 
 
 	Parameters:
-	i -- integer
-	K -- string
-	kappa - string
+	n 		-- integer
+	i 		-- integer
+	K 		-- string
+	kappa 	-- string
 	num_sim -- integer
 	type_sp -- string
 
-	Return:
-	NaN
+	Return: None
 	"""
+	frames = []
+	for rank in range(1, 5):
+		frame = load_csv(n, i, K, kappa, num_sim, rank, type_sp)
+		frames.append(frame)
 
-	rank_wr_df1 = load_csv(i, K, kappa, num_sim, 1, type_sp)
-	rank_wr_df2 = load_csv(i, K, kappa, num_sim, 2, type_sp)
-	rank_wr_df3 = load_csv(i, K, kappa, num_sim, 3, type_sp)
-	rank_wr_df4 = load_csv(i, K, kappa, num_sim, 4, type_sp)
-
-	"""" Save plot for probabilities of success of all ranks """
-
+	# Save plot for probabilities of success of all ranks
 	fig = plt.figure()
-	num_rank = 0 
-	for frame in [rank_wr_df1, rank_wr_df2, rank_wr_df3, rank_wr_df4]:
-		plt.plot(frame['wr'], frame['pr_success'], '-', markersize=2, label='Rank %s' % (num_rank + 1))
+	num_rank = 1
+	for frame in frames:
+		plt.plot(frame['wr'], frame['pr_success'], '-', markersize=2, label='Rank %s' % (num_rank))
 		num_rank += 1
 
 	plt.legend(loc='upper left')
-	plt.title(r'One-bit %s strategy for K_%s=%s & kappa=%s' %(type_sp, i, K[i], kappa))
+	plt.title(r'%s-row DoM %s for K_%s=%s & kappa=%s' %(n, type_sp, i, K[i], kappa))
 	plt.xlabel('Weight w')
 	plt.ylabel('Probability of success')
 	fig.tight_layout()
-	plt.savefig('./plot/1bit_%s_num-sim=%s_K=%s_kappa=%s_i=%s.png' % (type_sp, num_sim, K, kappa, i))
+	plt.savefig('./plot/1bit_%srow_%s_num-sim=%s_K=%s_kappa=%s_i=%s.pdf' % (n, type_sp, num_sim, K, kappa, i), dpi=300)
 	plt.close(fig)
 
-	"""" Save plot for probabilities of success for each rank """
-
-	fig1 = plt.figure()
-	plt.title(r'One-bit %s strategy for K_%s=%s & kappa=%s | Rank 1' %(type_sp, i, K[i], kappa))
-	plt.plot(rank_wr_df1['wr'], rank_wr_df1['pr_success'], '-', color='tab:blue', markersize=2, label='Rank 1')
-	plt.xlabel('Weight w')
-	plt.ylabel('Probability of success')
-	plt.ylim([0, 1.08])
-	plt.legend(loc='upper left')
-	fig.tight_layout()
-	plt.savefig('./plot/1bit_%s_num-sim=%s_K=%s_kappa=%s_i=%s_rank1.pdf' % (type_sp, num_sim, K, kappa, i))
-	plt.close(fig1)
-
-	# Plots for ranks 2 to 4
-	num_rank = 2
-	color_list = ('tab:orange', 'tab:green', 'tab:red')
-	for frame in [rank_wr_df2, rank_wr_df3, rank_wr_df4]:
-		fig = plt.figure()
-		plt.title(r'One-bit %s strategy for K_%s=%s & kappa=%s | Rank %s' %(type_sp, i, K[i], kappa, num_rank))
-		plt.plot(frame['wr'], frame['pr_success'], '-', markersize=2, color=color_list[num_rank-1], label='Rank %s' % num_rank)
-		plt.xlabel('Weight w')
-		plt.ylabel('Probability of success')
-		plt.ylim([-0.01, 0.258])
-		plt.legend(loc='upper right')
-		fig.tight_layout()
-		plt.savefig('./plot/1bit_%s_num-sim=%s_K=%s_kappa=%s_i=%s_rank%s.pdf' % (type_sp, num_sim, K, kappa, i, num_rank))
-		plt.close(fig)
-		num_rank += 1
-	
-	# Show the plots
 	# plt.show()
 
-def csv_to_plot_1bit_two_types(i, K, kappa, num_sim):
+def csv_to_plot_1bit_two_types(n, i, K, kappa, num_sim):
 	"""
-	Plot probabilities of success for a given (K, kappa) tuple for num_sim simulations
-	for both 1 absolute and squared scalar product
-	from CSV file. 
+	Plot probabilities of success for a given (K, kappa) tuple for num_sim simulations for 
+	a combinaison of n experiments on 1 bit of the register 
+	for both absolute scalar product and squared on from CSV file. 
 
 	Parameters:
-	i -- integer
-	K -- string
-	kappa - string
+	n 		-- integer
+	i 		-- integer
+	K 		-- string
+	kappa 	-- string
 	num_sim -- integer
+	type_sp -- string
 
-	Return:
-	NaN
+	Return: None
 	"""
+	frames_abs = []
+	for rank in range(1, 5):
+		frame = load_csv(n, i, K, kappa, num_sim, rank, 'abs')
+		frames_abs.append(frame)
 
-	rank_wr_df1_abs = load_csv(i, K, kappa, num_sim, 1, 'abs')
-	rank_wr_df2_abs = load_csv(i, K, kappa, num_sim, 2, 'abs')
-	rank_wr_df3_abs = load_csv(i, K, kappa, num_sim, 3, 'abs')
-	rank_wr_df4_abs = load_csv(i, K, kappa, num_sim, 4, 'abs')
-
-	rank_wr_df1_sq = load_csv(i, K, kappa, num_sim, 1, 'sq')
-	rank_wr_df2_sq = load_csv(i, K, kappa, num_sim, 2, 'sq')
-	rank_wr_df3_sq = load_csv(i, K, kappa, num_sim, 3, 'sq')
-	rank_wr_df4_sq = load_csv(i, K, kappa, num_sim, 4, 'sq')
+	frames_sq = []
+	for rank in range(1, 5):
+		frame = load_csv(n, i, K, kappa, num_sim, rank, 'sq')
+		frames_sq.append(frame)
 
 
-	"""" Save plot for probabilities of success for all ranks """
-
+	# Save plot for probabilities of success for all ranks
 	fig = plt.figure(figsize=(6,5))
 	color_list = ('tab:blue', 'tab:orange', 'tab:green', 'tab:red')
 
-	num_rank = 0 
-	for frame in [rank_wr_df1_abs, rank_wr_df2_abs, rank_wr_df3_abs, rank_wr_df4_abs]:
-		plt.plot(frame['wr'], frame['pr_success'], '-', color=color_list[num_rank], markersize=2, label='Rank %s (abs)' % (num_rank + 1))
+	num_rank = 1
+	for frame in frames_abs:
+		plt.plot(frame['wr'], frame['pr_success'], '-', color=color_list[num_rank - 1], 
+				 markersize=2, label='Rank %s (abs)' % (num_rank))
 		num_rank += 1
 
-	num_rank = 0 
-	for frame in [rank_wr_df1_sq, rank_wr_df2_sq, rank_wr_df3_sq, rank_wr_df4_sq]:
-		plt.plot(frame['wr'], frame['pr_success'], '--', color=color_list[num_rank], markersize=2, label='Rank %s (sq)' % (num_rank + 1))
+	num_rank = 1
+	for frame in frames_sq:
+		plt.plot(frame['wr'], frame['pr_success'], '--', color=color_list[num_rank - 1], 
+				 markersize=2, label='Rank %s (sq)' % (num_rank))
 		num_rank += 1
 
 	plt.legend(loc='upper left')
-	plt.title(r'One-bit strategy for K_%s=%s & kappa=%s' %(i, K[i], kappa))
+	plt.title(r'%s-row DoM for K_%s=%s & kappa=%s' %(n, i, K[i], kappa))
 	plt.xlabel('Weight w')
 	plt.ylabel('Probability of success')
 	fig.tight_layout()
-	plt.savefig('./plot/1bit_num-sim=%s_K=%s_kappa=%s_i=%s.png' % (num_sim, K, kappa, i))
+	plt.savefig('./plot/1bit_%srow_num-sim=%s_K=%s_kappa=%s_i=%s.pdf' % (n, num_sim, K, kappa, i), dpi=300)
 	plt.close(fig)
 
-	"""" Save plot for probabilities of success for each rank """
-
+	# Save plot for probabilities of success for each rank
 	fig1 = plt.figure()
-	plt.title(r'One-bit strategy for K_%s=%s & kappa=%s | Rank 1' % (i, K[i], kappa))
-	plt.plot(rank_wr_df1_abs['wr'], rank_wr_df1_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
-	plt.plot(rank_wr_df1_sq['wr'], rank_wr_df1_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
+	plt.title(r'%s-row DoM for K_%s=%s & kappa=%s | Rank 1' % (n, i, K[i], kappa))
+	plt.plot(frames_abs[0]['wr'], frames_abs[0]['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
+	plt.plot(frames_sq[0]['wr'],  frames_sq[0]['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
 	plt.xlabel('Weight w')
 	plt.ylabel('Probability of success')
 	plt.ylim([0, 1.08])
 	plt.legend(loc='lower right')
-	fig.tight_layout()
-	plt.savefig('./plot/1bit_num-sim=%s_K=%s_kappa=%s_i=%s_rank1.png' % (num_sim, K, kappa, i))
+	fig1.tight_layout()
+	plt.savefig('./plot/1bit_%srow_num-sim=%s_K=%s_kappa=%s_i=%s_rank1.pdf' % (n, num_sim, K, kappa, i), dpi=300)
 	plt.close(fig1)
 
-	fig2 = plt.figure()
-	plt.title(r'One-bit strategy for K_%s=%s & kappa=%s | Rank 2' %(i, K[i], kappa))
-	plt.plot(rank_wr_df2_abs['wr'], rank_wr_df2_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
-	plt.plot(rank_wr_df2_sq['wr'], rank_wr_df2_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
-	plt.xlabel('Weight w')
-	plt.ylabel('Probability of success')
-	plt.ylim([-0.01, 0.258])
-	plt.legend(loc='upper right')
-	fig.tight_layout()
-	plt.savefig('./plot/1bit_num-sim=%s_K=%s_kappa=%s_i=%s_rank2.png' % (num_sim, K, kappa, i))
-	plt.close(fig2)
+	for rank in range(1, 4):
+		fig2 = plt.figure()
+		plt.title(r'%s-row DoM for K_%s=%s & kappa=%s  | Rank %s' %(n, i, K[i], kappa, rank + 1))
+		plt.plot(frames_abs[rank]['wr'], frames_abs[rank]['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
+		plt.plot(frames_sq[rank]['wr'],  frames_sq[rank]['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
+		plt.xlabel('Weight w')
+		plt.ylabel('Probability of success')
+		plt.ylim([-0.01, 0.258])
+		plt.legend(loc='upper right')
+		fig2.tight_layout()
+		plt.savefig('./plot/1bit_%srow_num-sim=%s_K=%s_kappa=%s_i=%s_rank%s.pdf' % (n, num_sim, K, kappa, i, rank + 1), dpi=300)
+		plt.close(fig2)
 
-	fig3 = plt.figure()
-	plt.title(r'One-bit strategy for K_%s=%s & kappa=%s | Rank 3' % (i, K[i], kappa))
-	plt.plot(rank_wr_df3_abs['wr'], rank_wr_df3_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
-	plt.plot(rank_wr_df3_sq['wr'], rank_wr_df3_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
-	plt.xlabel('Weight w')
-	plt.ylabel('Probability of success')
-	plt.ylim([-0.01, 0.258])
-	plt.legend(loc='upper right')
-	fig.tight_layout()
-	plt.savefig('./plot/1bit_num-sim=%s_K=%s_kappa=%s_i=%s_rank3.png' % (num_sim, K, kappa, i))
-	plt.close(fig3)
-
-	fig4 = plt.figure()
-	plt.title(r'One-bit strategy for K_%s=%s & kappa=%s | Rank 4' %(i, K[i], kappa))
-	plt.plot(rank_wr_df4_abs['wr'], rank_wr_df4_abs['pr_success'], '-', color='tab:blue', markersize=2, label='abs')
-	plt.plot(rank_wr_df4_sq['wr'], rank_wr_df4_sq['pr_success'], '--', color='tab:purple', markersize=2, label='sq')
-	plt.xlabel('Weight w')
-	plt.ylabel('Probability of success')
-	plt.ylim([-0.01, 0.258])
-	plt.legend(loc='upper right')
-	fig.tight_layout()
-	plt.savefig('./plot/1bit_num-sim=%s_K=%s_kappa=%s_i=%s_rank4.png' % (num_sim, K, kappa, i))
-	plt.close(fig4)
+	# plt.show()
 
 def main(unused_command_line_args):
 
-	parser = argparse.ArgumentParser(description='mode, i, K, kappa and num_sim')
+	parser = argparse.ArgumentParser(description='mode, n, i, K, kappa, and num_sim')
 
 	parser.add_argument('mode', metavar='mode', type=int, default=1, 
-						help='mode 1: Probability of success with absolute scalar product\n mode 2: Probability of success with squared scalar product\n mode 3: Probability of success with absolute and squared scalar product')
-	parser.add_argument('i', metavar='i', type=int, default=1, help='studied bit of first chi row in [0, 2]')
-	parser.add_argument('K', metavar='K', type=str, default='000', help='3-length bit value')
-	parser.add_argument('kappa', metavar='kappa', type=str, default='000', help='3-length bit value')
-	parser.add_argument('num_sim', metavar='num_sim', type=int, default=100, help='number of simulations')
+						help='mode 1: Probability of success with absolute scalar product  | mode 2: Probability of success with squared scalar product  | mode 3: Probability of success with absolute and squared scalar product')
+	parser.add_argument('n', metavar='n', type=int, default=1, help='length of chi row in {3, 5}')
+	parser.add_argument('i', metavar='i', type=int, default=1, help='studied bit of first chi row in [0, n-1]')
+	parser.add_argument('K', metavar='K', type=str, default='000', help='n-length bit value')
+	parser.add_argument('kappa', metavar='kappa', type=str, default='000', help='n-length bit value')
+	parser.add_argument('num_sim', metavar='num_sim', type=int, default=100, help='number of simulations to perform')
 
 	args = parser.parse_args()
 
-	if len(args.K) != 3 or len(args.kappa) != 3 or (args.mode < 1) or (args.mode > 3) or (args.i < 0) or (args.i > 2):
+	if (args.n != 3) and (args.n != 5):
 		print('\n**ERROR**')
-		print('Required length of K and kappa: 3')
-		print('Available modes: 1 (abs), 2 (sq) or 3 (sq and abs)\n')
-		print('i is in [0, 2]\n')
+		print('Required length of chi row: 3 or 5 bits')
 
 	else:
-		# Length of signal part
-		n = 3
+		if (args.n == 3) and (len(args.K) != 3 or len(args.kappa) != 3 or (args.i < 0) or (args.i > 2) or (args.mode < 1) or (args.mode > 3)):
+				print('\n**ERROR**')
+				print('Required length of K and kappa: 3')
+				print('Available modes: 1 (abs), 2 (sq) or 3 (sq and abs)\n')
+				print('Index studied bit i: [0, 2]\n')
+		elif (args.n == 5) and (len(args.K) != 5 or len(args.kappa) != 5 or (args.i < 0) or (args.i > 4) or (args.mode < 1) or (args.mode > 3)):
+				print('\n**ERROR**')
+				print('Required length of K and kappa: 5')
+				print('Available modes: 1 (abs), 2 (sq) or 3 (sq and abs)\n')
+				print('Index studied bit i: [0, 4]\n')
 
-		# Initial i-th bit register state value
-		K = args.K
+		else:
+			# Length of signal part
+			n = args.n
 
-		# Key value after linear layer
-		kappa = args.kappa
+			# Initial i-th bit register state value
+			K = args.K
 
-		# Number of simulations
-		num_sim = args.num_sim
+			# Key value after linear layer
+			kappa = args.kappa
 
-		# i-th bit of register state studied
-		i = args.i
+			# Number of simulations
+			num_sim = args.num_sim
 
-		if args.mode == 1: 
+			# i-th bit of register state studied
+			i = args.i
 
-			# Time option
-			start_t = time.perf_counter()
+			if args.mode == 1: 
 
-			csv_to_plot_1bit_one_type(i, K, kappa, num_sim, 'abs')
+				# Time option
+				start_t = time.perf_counter()
 
-			# Time option
-			end_t = time.perf_counter()
-			print('time', end_t - start_t, '\n')
+				csv_to_plot_1bit_one_type(n, i, K, kappa, num_sim, 'abs')
 
-		if args.mode == 2: 
+				# Time option
+				end_t = time.perf_counter()
+				print('time', end_t - start_t, '\n')
 
-			# Time option
-			start_t = time.perf_counter()
+			if args.mode == 2: 
 
-			csv_to_plot_1bit_one_type(i, K, kappa, num_sim, 'sq')
+				# Time option
+				start_t = time.perf_counter()
 
-			# Time option
-			end_t = time.perf_counter()
-			print('time', end_t - start_t, '\n')
+				csv_to_plot_1bit_one_type(n, i, K, kappa, num_sim, 'sq')
 
-		if args.mode == 3: 
+				# Time option
+				end_t = time.perf_counter()
+				print('time', end_t - start_t, '\n')
 
-			# Time option
-			start_t = time.perf_counter()
+			if args.mode == 3: 
 
-			csv_to_plot_1bit_two_types(i, K, kappa, num_sim)
+				# Time option
+				start_t = time.perf_counter()
 
-			# Time option
-			end_t = time.perf_counter()
-			print('time', end_t - start_t, '\n')
+				csv_to_plot_1bit_two_types(n, i, K, kappa, num_sim)
+
+				# Time option
+				end_t = time.perf_counter()
+				print('time', end_t - start_t, '\n')
 
 if __name__ == '__main__':
 	sys.exit(main(sys.argv))
