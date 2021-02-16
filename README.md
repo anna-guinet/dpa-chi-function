@@ -40,8 +40,10 @@ First, the following scripts save success probabilities per rank in a CSV file:
 	- ```num_sim_1bit_pr_success_to_csv_sq.py [-h] n i K kappa num_sim```  with squared scalar products.
 
 - for the cDoM strategy
-	- ```num_sim_1x5bits_pr_success_to_csv_abs.py [-h] K kappa num_sim```  to combine absolute scalar products for a five-bit chi row.
-	- ```num_sim_1x5bits_pr_success_to_csv_sq.py [-h] K kappa num_sim```  to combine squared scalar products for a five-bit chi row.
+	- ```num_sim_1x5bits_pr_success_to_csv_abs.py [-h] K kappa num_sim```  to combine absolute scalar products for a five-bit chi row, and to retrieve kappa.
+	- ```num_sim_1x5bits_pr_success_to_csv_sq.py [-h] K kappa num_sim```  to combine squared scalar products for a five-bit chi row, and to retrieve kappa.
+	- ```num_sim_1x5bits_6bits_pr_success_to_csv_abs.py [-h] K kappa num_sim```  to combine absolute scalar products for a five-bit chi row, and to retrieve (K, kappa).
+	- ```num_sim_1x5bits_6bits_pr_success_to_csv_sq.py [-h] K kappa num_sim```  to combine squared scalar products for a five-bit chi row, and to retrieve (K, kappa).
 
 - for the CPA strategy
 	- ```num_sim_3bits_pr_success_to_csv.py [-h] K kappa num_sim```  for a three-bit chi row.
@@ -54,6 +56,7 @@ Next, run the following scripts to plot the results from the CSV file:
 
 - for the cDoM strategy
 	- ```num_sim_1x5bits_pr_success_csv_to_plot.py [-h] mode K kappa num_sim```  for the cDoM strategy with absolute (mode: 1) or squared (mode: 2) scalar products, or both (mode: 3) options.
+	- ```num_sim_1x5bits_6bits_pr_success_csv_to_plot.py [-h] mode K kappa num_sim```  for the cDoM strategy with absolute (mode: 1) or squared (mode: 2) scalar products, or both (mode: 3) options, to retrieve some bits of K. 
 
 - for the CPA strategy
 	- ```num_sim_3bits_pr_success_csv_to_plot.py [-h] K kappa num_sim ``` for a three-bit chi row.
