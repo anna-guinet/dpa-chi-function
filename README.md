@@ -22,8 +22,8 @@ The one-simulation scripts take the following arguments:
   - ```sim_1bit_to_plot_sq.py [-h] n i K kappa and num_sim```  with squared scalar products.
 
 - for the cDoM strategy
-  - ```sim_1x5bits_to_plot_abs.py [-h] K kappa num_sim```  to combine absolute scalar products.
-  - ```sim_1x5bits_to_plot_sq.py [-h] K kappa num_sim``` to combine squared scalar products.
+  - ```sim_1x5bits_to_plot_abs.py [-h] K kappa num_sim```  to combine absolute scalar products for a five-bit chi row.
+  - ```sim_1x5bits_to_plot_sq.py [-h] K kappa num_sim``` to combine squared scalar products for a five-bit chi row.
 
 - for the CPA strategy
   - ```sim_3bits_3row_to_plot.py [-h] K kappa num_sim``` for a three-bit chi row.
@@ -40,8 +40,8 @@ First, the following scripts save success probabilities per rank in a CSV file:
 	- ```num_sim_1bit_pr_success_to_csv_sq.py [-h] n i K kappa num_sim```  with squared scalar products.
 
 - for the cDoM strategy
-	- ```num_sim_1x3bits_pr_success_to_csv_abs.py [-h] K kappa num_sim```  to combine absolute scalar products.
-	- ```num_sim_1x3bits_pr_success_to_csv_sq.py [-h] K kappa num_sim```  to combine squared scalar products.
+	- ```num_sim_1x5bits_pr_success_to_csv_abs.py [-h] K kappa num_sim```  to combine absolute scalar products for a five-bit chi row.
+	- ```num_sim_1x5bits_pr_success_to_csv_sq.py [-h] K kappa num_sim```  to combine squared scalar products for a five-bit chi row.
 
 - for the CPA strategy
 	- ```num_sim_3bits_pr_success_to_csv.py [-h] K kappa num_sim```  for a three-bit chi row.
@@ -53,7 +53,7 @@ Next, run the following scripts to plot the results from the CSV file:
 	- ```num_sim_1bit_pr_success_csv_to_plot.py [-h] mode n i K kappa num_sim```  for the DoM strategy with absolute (mode: 1) or squared (mode: 2) scalar products, or both (mode: 3) option.
 
 - for the cDoM strategy
-	- ```num_sim_1x3bits_pr_success_csv_to_plot.py [-h] mode K kappa num_sim```  for the cDoM strategy with absolute (mode: 1) or squared (mode: 2) scalar products, or both (mode: 3) options.
+	- ```num_sim_1x5bits_pr_success_csv_to_plot.py [-h] mode K kappa num_sim```  for the cDoM strategy with absolute (mode: 1) or squared (mode: 2) scalar products, or both (mode: 3) options.
 
 - for the CPA strategy
 	- ```num_sim_3bits_pr_success_csv_to_plot.py [-h] K kappa num_sim ``` for a three-bit chi row.
